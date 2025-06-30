@@ -1,0 +1,67 @@
+<u:UrsaWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QuickSkin.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:QuickSkin.Views"
+        xmlns:u="https://irihi.tech/ursa"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="QuickSkin.Views.WorkWindow"
+        ExtendClientAreaTitleBarHeightHint="40"
+        ExtendClientAreaToDecorationsHint="True"
+        Width="1200"
+        Height="800"
+        WindowStartupLocation="CenterScreen"
+        x:DataType="vm:WorkWindowViewModel"
+        Icon="resm:QuickSkin.Assets.EmbeddedRes.app-icon.ico"
+        Title="QuickSkin">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:WorkWindowViewModel />
+    </Design.DataContext>
+
+    <u:UrsaWindow.DataContext>
+        <vm:WorkWindowViewModel />
+    </u:UrsaWindow.DataContext>
+
+    <u:UrsaWindow.Styles>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons">
+            <Setter Property="MinHeight" Value="40" />
+        </Style>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons:normal /template/ StackPanel">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Spacing" Value="5" />
+        </Style>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons /template/ Button">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="CornerRadius" Value="6" />
+        </Style>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons">
+            <Style Selector="^:normal /template/ PathIcon#PART_CloseButtonIcon">
+                <Setter Property="Data" Value="{StaticResource SemiIconClose}" />
+                <Setter Property="Height" Value="13.5" />
+            </Style>
+            <Style Selector="^:maximized /template/ PathIcon#PART_CloseButtonIcon">
+                <Setter Property="Data" Value="{StaticResource SemiIconClose}" />
+                <Setter Property="Height" Value="13.5" />
+            </Style>
+        </Style>
+
+    </u:UrsaWindow.Styles>
+
+    <Panel>
+
+        <views:MainView />
+
+        <u:OverlayDialogHost />
+
+    </Panel>
+
+</u:UrsaWindow>

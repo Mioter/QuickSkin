@@ -1,0 +1,80 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:semi="https://irihi.tech/semi"
+             xmlns:u-Semi="https://irihi.tech/ursa/themes/semi"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:viewModels="clr-namespace:QuickSkin.ViewModels"
+             xmlns:services="clr-namespace:QuickSkin.Common.Services"
+             x:Class="QuickSkin.App"
+             x:DataType="viewModels:ApplicationViewModel"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <services:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+
+        <semi:SemiTheme Locale="zh-CN" />
+        <semi:SemiPopupAnimations />
+        <u-Semi:SemiTheme Locale="zh-CN" />
+
+        <StyleInclude Source="Assets/AvaloniaRes/ThemeTemplates/.index.axaml" />
+
+        <Style Selector="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="ToolTip /template/ ContentPresenter">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style Selector="u|NotificationCard.Light /template/ Button#PART_CloseButton /template/ Border">
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+
+        <Style Selector="u|MessageBoxControl /template/ Button">
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+
+        <Style Selector=":is(u|NumericUpDown)">
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
+        <Style Selector=":is(ContentControl)">
+            <Setter Property="FontFamily" Value="{DynamicResource Cjtw85}" />
+        </Style>
+
+    </Application.Styles>
+
+    <Application.Resources>
+
+        <FontFamily x:Key="Cjtw85">resm:QuickSkin.Assets.EmbeddedRes.Fonts.CJTW85.ttf#公众号-犬神志</FontFamily>
+        <FontFamily x:Key="DefaultFontFamily">fonts:Inter#Inter,$Default</FontFamily>
+
+        <CornerRadius x:Key="FlyoutCornerRadius">8</CornerRadius>
+
+        <CornerRadius x:Key="ButtonCornerRadius">5</CornerRadius>
+        <CornerRadius x:Key="ComboBoxSelectorCornerRadius">8</CornerRadius>
+
+    </Application.Resources>
+
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="resm:QuickSkin.Assets.EmbeddedRes.app-icon.ico" MacOSProperties.IsTemplateIcon="true"
+                      ToolTipText="QwQ Music"
+                      Command="{Binding ShowMainWindowCommand}">
+
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="显示窗口" Command="{Binding ShowMainWindowCommand}" />
+                        <NativeMenuItem Header="退出" Command="{Binding ExitApplicationCommand}" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+
+</Application>

@@ -1,0 +1,104 @@
+<u:UrsaWindow xmlns="https://github.com/avaloniaui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:u="https://irihi.tech/ursa"
+              xmlns:viewModels="clr-namespace:QuickSkin.ViewModels"
+              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+              x:Class="QuickSkin.Views.GuideWindow"
+              ExtendClientAreaTitleBarHeightHint="40"
+              ExtendClientAreaToDecorationsHint="True"
+              Width="600"
+              IsRestoreButtonVisible="False"
+              WindowStartupLocation="CenterScreen"
+              x:DataType="viewModels:GuideWindowViewModel"
+              Height="400"
+              Title="打开工作区">
+
+    <u:UrsaWindow.DataContext>
+        <viewModels:GuideWindowViewModel />
+    </u:UrsaWindow.DataContext>
+
+    <u:UrsaWindow.Styles>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons">
+            <Setter Property="MinHeight" Value="40" />
+        </Style>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons:normal /template/ StackPanel">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Spacing" Value="5" />
+        </Style>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons /template/ Button">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="CornerRadius" Value="6" />
+        </Style>
+
+        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons">
+            <Style Selector="^:normal /template/ PathIcon#PART_CloseButtonIcon">
+                <Setter Property="Data" Value="{StaticResource SemiIconClose}" />
+                <Setter Property="Height" Value="13.5" />
+            </Style>
+            <Style Selector="^:maximized /template/ PathIcon#PART_CloseButtonIcon">
+                <Setter Property="Data" Value="{StaticResource SemiIconClose}" />
+                <Setter Property="Height" Value="13.5" />
+            </Style>
+        </Style>
+
+    </u:UrsaWindow.Styles>
+
+    <Grid RowDefinitions="40,*">
+
+        <TextBlock Text="打开工作区" VerticalAlignment="Center" Margin="20,0" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="1*,2*" Margin="10,0">
+
+            <Grid RowDefinitions="Auto,Auto">
+
+                <StackPanel Margin="20" Spacing="10">
+                    <Image Source="resm:QuickSkin.Assets.EmbeddedRes.fufu.png" />
+
+                    <TextBlock
+                        FontWeight="Bold"
+                        Margin="10,0"
+                        HorizontalAlignment="Center"
+                        Text="QuickSkin"
+                        VerticalAlignment="Center">
+
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
+                                <GradientStop Color="#3A7FF9" Offset="0" />
+                                <GradientStop Color="#092A92" Offset="1" />
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" Opacity="0.1" />
+                        </TextBlock.Effect>
+
+                    </TextBlock>
+                </StackPanel>
+
+            </Grid>
+
+            <Grid Grid.Column="1" RowDefinitions="Auto,*">
+
+                <StackPanel HorizontalAlignment="Right">
+
+                    <u:IconButton Icon="{StaticResource SemiIconPlus}"
+                                  CornerRadius="8"
+                                  Command="{Binding OpenWorkspaceCommand}" />
+
+                </StackPanel>
+
+                <ListBox Grid.Row="1" />
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+
+</u:UrsaWindow>
