@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:drawers="clr-namespace:QuickSkin.ViewModels.Drawers"
+             xmlns:u="https://irihi.tech/ursa"
+             x:DataType="drawers:NotificationListViewModel"
+             x:Class="QuickSkin.Views.Drawers.NotificationList">
+
+    <UserControl.DataContext>
+        <drawers:NotificationListViewModel />
+    </UserControl.DataContext>
+
+        <ItemsControl
+            ItemsSource="{Binding NotificationItems}">
+
+            <ItemsControl.Styles>
+
+                <Style Selector="ItemsControl > ContentPresenter">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="ContextMenu">
+                        <ContextMenu>
+
+                            <MenuItem
+                                CommandParameter="{Binding }"
+                                Command="{Binding $parent[UserControl].((drawers:NotificationListViewModel)DataContext).RemoveNotificationCommand}"
+                                Header="删除">
+                                <MenuItem.Icon>
+                                    <PathIcon Foreground="{DynamicResource EmphasizePink3}"
+                                              Data="{StaticResource SemiIconDelete}"
+                                              Margin="2" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+
+                        </ContextMenu>
+                    </Setter>
+                </Style>
+
+                <Style Selector="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+
+            </ItemsControl.Styles>
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Margin="10"
+                        Padding="{DynamicResource NotificationCardPadding}"
+                        BoxShadow="{DynamicResource NotificationCardBoxShadows}"
+                        BorderBrush="{DynamicResource NotificationCardBackground}"
+                        BorderThickness="{DynamicResource NotificationCardBorderThickness}"
+                        CornerRadius="{DynamicResource NotificationCardCornerRadius}">
+                        <DockPanel HorizontalSpacing="10" VerticalSpacing="10">
+                            <PathIcon
+                                VerticalAlignment="Top"
+                                Data="{DynamicResource NotificationCardInformationIconPathData}" />
+
+                            <SelectableTextBlock
+                                Foreground="{DynamicResource NotificationCardMessageForeground}"
+                                FontSize="{DynamicResource NotificationCardMessageFontSize}"
+                                FontWeight="{DynamicResource NotificationCardMessageFontWeight}"
+                                Text="{Binding Message}"
+                                TextWrapping="Wrap" />
+
+                            <u:IconButton
+                                Icon="{StaticResource SemiIconClose}"
+                                VerticalAlignment="Top"
+                                CommandParameter="{Binding}"
+                                Command="{Binding $parent[UserControl].((drawers:NotificationListViewModel)DataContext).RemoveNotificationCommand}"
+                                Theme="{StaticResource BorderlessIconButton}"
+                                HorizontalAlignment="Right" />
+                        </DockPanel>
+                    </Border>
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
+
+
+</UserControl>

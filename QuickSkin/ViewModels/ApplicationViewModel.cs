@@ -35,11 +35,12 @@ public partial class ApplicationViewModel : ObservableObject
         try
         {
             ConfigManager.Save();
+
             Log.Information(
                 "\n"
-                    + "===========================================\n"
-                    + "应用程序已退出\n"
-                    + "===========================================\n"
+              + "===========================================\n"
+              + "应用程序已退出\n"
+              + "===========================================\n"
             );
 
             Log.CloseAndFlush();

@@ -1,0 +1,229 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:dialogs="clr-namespace:QuickSkin.ViewModels.Dialogs"
+             xmlns:enums="clr-namespace:QuickSkin.Core.Enums"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             Height="450"
+             Width="800"
+             x:DataType="dialogs:NewWorkspaceViewModel"
+             x:Class="QuickSkin.Views.Dialogs.NewWorkspace">
+
+    <Design.DataContext>
+        <dialogs:NewWorkspaceViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="40,*,Auto" ColumnDefinitions="Auto,*" ColumnSpan="10">
+
+        <TextBlock Text="新建工作区"
+                   FontWeight="Bold"
+                   Grid.ColumnSpan="2"
+                   VerticalAlignment="Center"
+                   Margin="20,0" />
+
+        <u:SelectionList Grid.Row="1" Grid.Column="0" Name="NavigationList" SelectedIndex="0" Margin="10,0">
+
+            <u:SelectionList.Indicator>
+                <Border
+                    Width="5" Height="15"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource SemiBlue5}"
+                    CornerRadius="3" />
+            </u:SelectionList.Indicator>
+
+            <u:SelectionList.Styles>
+
+                <Style Selector="u|SelectionListItem">
+                    <Setter Property="Margin" Value="10,0" />
+                    <Setter Property="Padding" Value="10" />
+
+                    <Style Selector="^:selected">
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </Style>
+                </Style>
+
+                <Style Selector="u|SelectionList > TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="10,0" />
+                </Style>
+
+            </u:SelectionList.Styles>
+
+            <TextBlock Text="基础" />
+            
+            <TextBlock Text="图标" />
+            
+
+        </u:SelectionList>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Classes.InsetContent="True">
+
+            <Carousel SelectedIndex="{Binding #NavigationList.SelectedIndex}" Margin="10">
+
+                <Carousel.PageTransition>
+                    <CompositePageTransition>
+                        <CrossFade Duration="0:0:0.5" />
+                        <PageSlide
+                            Duration="0:0:0.3"
+                            Orientation="Vertical"
+                            SlideInEasing="QuadraticEaseIn"
+                            SlideOutEasing="QuadraticEaseOut" />
+                    </CompositePageTransition>
+                </Carousel.PageTransition>
+
+                <StackPanel Spacing="10">
+                    <TextBlock Text="名称" />
+                    <TextBox Text="{Binding Name}" />
+
+                    <Panel>
+                        <TextBlock Text="工作模式" VerticalAlignment="Center">
+                            <ToolTip.Tip>
+
+                                <TextBlock>
+                                    工作模式分为 *
+                                    <Run
+                                        FontWeight="Bold"
+                                        Text="{Binding  Converter={StaticResource EnumDescriptionConverter},ConverterParameter={x:Static enums:WorkingMode.ReleaseFromSource}}" />
+                                    * 与
+                                    *
+                                    <Run
+                                        FontWeight="Bold"
+                                        Text="{Binding Converter={StaticResource EnumDescriptionConverter},ConverterParameter={x:Static enums:WorkingMode.EnableDisabledMode}}" />
+                                    *
+                                </TextBlock>
+
+                            </ToolTip.Tip>
+                        </TextBlock>
+                        <ComboBox
+                            HorizontalAlignment="Right"
+                            ItemsSource="{Binding WorkingModes}"
+                            DisplayMemberBinding="{Binding Value}"
+                            SelectedValueBinding="{Binding Key}"
+                            SelectedValue="{Binding WorkingMode}">
+
+                            <ToolTip.Tip>
+
+                                <Panel>
+                                    <TextBlock Text="在源目录存放全部文件，而目标文件则从源目录复制（输出）到输出目录"
+                                               IsVisible="{Binding WorkingMode,
+                                               Converter={StaticResource StringCompareConverter},
+                                    ConverterParameter={x:Static enums:WorkingMode.ReleaseFromSource}}" />
+
+                                    <TextBlock IsVisible="{Binding WorkingMode,
+                                               Converter={StaticResource StringCompareConverter},
+                                               ConverterParameter={x:Static enums:WorkingMode.EnableDisabledMode}}">
+                                        文件被放置在输出目录，通过更改文件夹名称或其他标识使文件对其他使用者识别为禁用状态。<LineBreak />
+                                        * <Bold>注意</Bold> *<LineBreak />
+                                        此模式下不会复制源文件，请自行保管源文件
+                                        <Italic>（如果需要保留的话，不需要当我没说）</Italic>
+                                    </TextBlock>
+                                </Panel>
+                            </ToolTip.Tip>
+
+                        </ComboBox>
+                    </Panel>
+
+                    <StackPanel
+                        Spacing="10"
+                        IsVisible="{Binding WorkingMode,Converter={StaticResource StringCompareConverter},ConverterParameter='{x:Static enums:WorkingMode.ReleaseFromSource}'}">
+                        <TextBlock Text="输入路径">
+                            <ToolTip.Tip>
+
+                                <TextBlock>
+                                    输入路径为源文件存放的目录，此项仅在工作模式为 *
+                                    <Run
+                                        FontWeight="Bold"
+                                        Text="{Binding WorkingMode,
+                                        Converter={StaticResource EnumDescriptionConverter}}" />
+                                    * 下有效
+                                </TextBlock>
+
+                            </ToolTip.Tip>
+                        </TextBlock>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <TextBox Text="{Binding InputPath}" />
+                            <u:IconButton Grid.Column="1" Icon="{StaticResource SemiIconFolderOpen}"
+                                          HorizontalAlignment="Right"
+                                          ToolTip.Tip="从文件中选择目录"
+                                          VerticalAlignment="Top"
+                                          Command="{Binding SelectedInputPathCommand}" />
+                        </Grid>
+
+                    </StackPanel>
+
+                    <TextBlock Text="输出路径" ToolTip.Tip="输出路径为目标文件存放的目录" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <TextBox Text="{Binding OutputPath}" />
+                        <u:IconButton Grid.Column="1" Icon="{StaticResource SemiIconFolderOpen}"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      ToolTip.Tip="从文件中选择目录"
+                                      Command="{Binding SelectedOutputPathCommand}" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel>
+                    <Button Height="180"
+                            Width="180"
+                            Padding="0"
+                            Command="{Binding SetIconCommand}"
+                            Background="#F5F5F6"
+                            CornerRadius="12"
+                            Classes.IconIsNull="{Binding Icon,Converter={x:Static ObjectConverters.IsNull}}"
+                            Classes.IconNotNull="{Binding Icon,Converter={x:Static ObjectConverters.IsNotNull}}">
+
+                        <Button.Styles>
+
+                            <Style Selector="Button.IconIsNull">
+                                <Setter Property="Foreground" Value="{DynamicResource SemiGrey2}" />
+                                <Setter Property="Content">
+                                    <Template>
+                                        <PathIcon Foreground="{DynamicResource SemiGrey2}" Margin="50"
+                                                  Data="{StaticResource SemiIconImage}" />
+                                    </Template>
+                                </Setter>
+                            </Style>
+
+                            <Style Selector="Button.IconNotNull">
+                                <Setter Property="Content">
+                                    <Template>
+                                        <Border CornerRadius="{Binding $parent[Button].CornerRadius}"
+                                                ClipToBounds="True">
+                                            <Image Source="{Binding Icon}" />
+                                        </Border>
+                                    </Template>
+                                </Setter>
+                            </Style>
+
+                        </Button.Styles>
+
+                    </Button>
+                </StackPanel>
+                
+            </Carousel>
+
+        </ScrollViewer>
+
+        <StackPanel Margin="20" Spacing="20" HorizontalAlignment="Right" Grid.Row="2" Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal">
+
+            <Button ToolTip.Tip="还是蒜了吧..."
+                    Content="取消"
+                    Theme="{DynamicResource OutlineButton}"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="确认"
+                    IsEnabled="{Binding !HasErrors}"
+                    ToolTip.Tip="我确定好了！"
+                    Command="{Binding OkCommand}"
+                    Theme="{DynamicResource SolidButton}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

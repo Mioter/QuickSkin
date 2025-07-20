@@ -13,5 +13,5 @@ obj/
 # 忽略日志文件
 *.log
 
-# 格式化配置文件
-.csharpierrc.yaml
+# 其他文件
+global.json

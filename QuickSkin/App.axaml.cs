@@ -37,6 +37,7 @@ public class App : Application
             WindowManager.OpenGuideWindow(desktop);
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
+
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -57,18 +58,21 @@ public class App : Application
             icon: MessageBoxIcon.Error,
             button: MessageBoxButton.OKCancel
         );
+
         Log.Error("后台任务出现异常: {Message}", e.Exception.Message);
     }
 
     private static void UIThread_OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         e.Handled = true;
+
         MessageBox.ShowOverlayAsync(
             $"应用程序出现异常: {e.Exception.Message}",
             "异常",
             icon: MessageBoxIcon.Error,
             button: MessageBoxButton.OKCancel
         );
+
         Log.Error("应用程序出现异常: {Message}", e.Exception.Message);
     }
 
@@ -80,6 +84,7 @@ public class App : Application
             icon: MessageBoxIcon.Error,
             button: MessageBoxButton.OKCancel
         );
+
         Log.Error("应用域出现异常: {Message}", e.ExceptionObject);
     }
 

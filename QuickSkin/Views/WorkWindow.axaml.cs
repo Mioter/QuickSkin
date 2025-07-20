@@ -2,10 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using QuickSkin.Common.Manager;
-using QuickSkin.Definitions.ClassBase;
+using QuickSkin.Core.ClassBase;
+using QuickSkin.Core.Enums;
 using QuickSkin.ViewModels;
-using QuickSkin.ViewModels.ComponentViewModel;
-using QuickSkin.Views.Components;
+using QuickSkin.ViewModels.Dialogs;
+using QuickSkin.Views.Dialogs;
 using Serilog;
 using Ursa.Controls;
 
@@ -47,41 +48,42 @@ public partial class WorkWindow : InteractiveWindowBase
     {
         var behavior = ConfigManager.ConfigModel.ClosingBehavior;
 
-        if (behavior == Definitions.Enums.ClosingBehavior.AskAbout)
+        if (behavior == Core.Enums.ClosingBehavior.AskAbout)
         {
             behavior = await GetUserClosingBehaviorAsync();
         }
 
         switch (behavior)
         {
-            case Definitions.Enums.ClosingBehavior.Exit:
+            case Core.Enums.ClosingBehavior.Exit:
                 DoExit();
+
                 break;
-            case Definitions.Enums.ClosingBehavior.HideToTray:
+            case Core.Enums.ClosingBehavior.HideToTray:
                 Hide();
+
                 break;
-            case Definitions.Enums.ClosingBehavior.AskAbout:
+            case Core.Enums.ClosingBehavior.AskAbout:
             default:
                 // 其它情况无需处理
                 break;
         }
     }
 
-    private static async Task<Definitions.Enums.ClosingBehavior> GetUserClosingBehaviorAsync()
+    private static async Task<ClosingBehavior> GetUserClosingBehaviorAsync()
     {
         var options = new OverlayDialogOptions
         {
-            Title = "退出提示",
             Mode = DialogMode.Question,
             CanDragMove = true,
             CanResize = false,
         };
 
-        var model = new ProgramExitConfirmViewModel(options);
-        await OverlayDialog.ShowCustomModal<ExitConfirm, ProgramExitConfirmViewModel, object>(model, options: options);
+        var model = new ExitConfirmViewModel();
+        bool result = await OverlayDialog.ShowCustomModal<ExitConfirm, ExitConfirmViewModel, bool>(model, options: options);
 
-        if (model.IsCancel)
-            return Definitions.Enums.ClosingBehavior.AskAbout;
+        if (!result)
+            return Core.Enums.ClosingBehavior.AskAbout;
 
         if (model.IsEnablePrompt)
             ConfigManager.ConfigModel.ClosingBehavior = model.ClosingBehavior;

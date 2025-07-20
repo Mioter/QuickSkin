@@ -1,20 +1,22 @@
 <u:UrsaWindow xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:QuickSkin.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:QuickSkin.Views"
-        xmlns:u="https://irihi.tech/ursa"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="QuickSkin.Views.WorkWindow"
-        ExtendClientAreaTitleBarHeightHint="40"
-        ExtendClientAreaToDecorationsHint="True"
-        Width="1200"
-        Height="800"
-        WindowStartupLocation="CenterScreen"
-        x:DataType="vm:WorkWindowViewModel"
-        Icon="resm:QuickSkin.Assets.EmbeddedRes.app-icon.ico"
-        Title="QuickSkin">
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:vm="using:QuickSkin.ViewModels"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:views="clr-namespace:QuickSkin.Views"
+              xmlns:u="https://irihi.tech/ursa"
+              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+              x:Class="QuickSkin.Views.WorkWindow"
+              ExtendClientAreaTitleBarHeightHint="40"
+              ExtendClientAreaToDecorationsHint="True"
+              Width="1200"
+              Height="800"
+              MinHeight="400"
+              MinWidth="600"
+              WindowStartupLocation="CenterScreen"
+              x:DataType="vm:WorkWindowViewModel"
+              Icon="resm:QuickSkin.Assets.EmbeddedRes.app-icon.ico"
+              Title="{Binding Title}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -26,42 +28,50 @@
         <vm:WorkWindowViewModel />
     </u:UrsaWindow.DataContext>
 
-    <u:UrsaWindow.Styles>
+    <Grid RowDefinitions="*,Auto">
 
-        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons">
-            <Setter Property="MinHeight" Value="40" />
-        </Style>
+        <views:WorkView />
 
-        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons:normal /template/ StackPanel">
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Spacing" Value="5" />
-        </Style>
+        <!--
+        <Separator Grid.Row="1" VerticalAlignment="Top" Margin="0"/>
+        -->
 
-        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons /template/ Button">
-            <Setter Property="Height" Value="30" />
-            <Setter Property="Width" Value="30" />
-            <Setter Property="CornerRadius" Value="6" />
-        </Style>
+        <Panel Grid.Row="1" Margin="10">
 
-        <Style Selector="u|TitleBar /template/ u|CaptionButtons#PART_CaptionButtons">
-            <Style Selector="^:normal /template/ PathIcon#PART_CloseButtonIcon">
-                <Setter Property="Data" Value="{StaticResource SemiIconClose}" />
-                <Setter Property="Height" Value="13.5" />
-            </Style>
-            <Style Selector="^:maximized /template/ PathIcon#PART_CloseButtonIcon">
-                <Setter Property="Data" Value="{StaticResource SemiIconClose}" />
-                <Setter Property="Height" Value="13.5" />
-            </Style>
-        </Style>
+            <Panel.Styles>
 
-    </u:UrsaWindow.Styles>
+                <Style Selector="Button">
+                    <Setter Property="MinHeight" Value="0" />
+                    <Setter Property="MinWidth" Value="0" />
+                    <Setter Property="Padding" Value="5" />
+                    <Setter Property="CornerRadius" Value="5" />
+                    <Setter Property="Theme" Value="{StaticResource BorderlessButton}" />
+                </Style>
 
-    <Panel>
+                <Style Selector="PathIcon">
+                    <Setter Property="Height" Value="12" />
+                    <Setter Property="Width" Value="12" />
+                </Style>
 
-        <views:MainView />
+            </Panel.Styles>
 
-        <u:OverlayDialogHost />
+            <StackPanel HorizontalAlignment="Left" Spacing="10">
+                <Button ToolTip.Tip="关闭工作区" 
+                        Command="{Binding CloseWorkspaceCommand}">
+                    <PathIcon Data="{StaticResource SemiIconClear}" />
+                </Button>
+            </StackPanel>
 
-    </Panel>
+            <StackPanel HorizontalAlignment="Right" Spacing="10">
+                <Button
+                    ToolTip.Tip="打开信息列表"
+                    Command="{Binding ShowNotificationListCommand}">
+                    <PathIcon Data="{StaticResource SemiIconComment}" />
+                </Button>
+            </StackPanel>
+        </Panel>
+
+        <u:OverlayDialogHost Grid.Row="0" Grid.RowSpan="2" />
+    </Grid>
 
 </u:UrsaWindow>

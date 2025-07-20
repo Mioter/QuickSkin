@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:QuickSkin.ViewModels.Dialogs"
+             xmlns:u="https://irihi.tech/ursa"
+             x:DataType="dialogs:ArchiveSelectorViewModel"
+             x:Class="QuickSkin.Views.Dialogs.ArchiveSelector">
+
+    <Grid RowDefinitions="40,Auto,*,Auto">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition MinWidth="200"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="选则项目"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Margin="20,0" />
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="10"
+                    Margin="20,0,20,10">
+            <ToggleButton Classes="OutlineToggleButton" ToolTip.Tip="全选" IsChecked="{Binding IsSelectAll}" Height="32"
+                          Width="32" Padding="8">
+                <PathIcon Data="{StaticResource SemiIconCheckList}" />
+            </ToggleButton>
+        </StackPanel>
+
+        <Border Grid.Row="2" Grid.Column="0" BorderThickness="1"
+                Margin="20,0,10,0"
+                BorderBrush="{DynamicResource BorderCardBorderBrush}" CornerRadius="12">
+
+            <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto">
+
+                <ItemsControl Margin="10" ItemsSource="{Binding AllFileItems}" >
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <ToggleButton
+                                Margin="0,0,0,10"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                IsChecked="{Binding IsSelected}"
+                                Command="{Binding $parent[UserControl].((dialogs:ArchiveSelectorViewModel)DataContext).SelectFileCommand}"
+                                FontWeight="Normal"
+                                CommandParameter="{Binding Content}" Content="{Binding Content}" />
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+            </ScrollViewer>
+
+        </Border>
+
+        <GridSplitter Grid.Row="2" Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+
+        <Border Grid.Row="2" Grid.Column="1" BorderThickness="1"
+                Margin="10,0,20,0"
+                BorderBrush="{DynamicResource BorderCardBorderBrush}"
+                CornerRadius="12">
+
+            <ScrollViewer Margin="10">
+
+                <ItemsControl Margin="10" ItemsSource="{Binding SelectedFileItems}">
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
+                                <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                                <u:IconButton Grid.Column="1" CornerRadius="8"
+                                              FontWeight="Normal"
+                                              Theme="{StaticResource OutlineIconButton}"
+                                              Foreground="{DynamicResource TextBlockDefaultForeground}"
+                                              Command="{Binding $parent[UserControl].((dialogs:ArchiveSelectorViewModel)DataContext).DeleteFileCommand}"
+                                              CommandParameter="{Binding}"
+                                              Icon="{StaticResource SemiIconClose}" />
+                            </Grid>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+            </ScrollViewer>
+
+        </Border>
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="20" Spacing="20"
+                    HorizontalAlignment="Right" Orientation="Horizontal">
+
+            <Button ToolTip.Tip="还是蒜了吧..."
+                    Content="取消"
+                    Theme="{DynamicResource OutlineButton}"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="确认"
+                    IsEnabled="{Binding SelectedFileItems.Count}"
+                    ToolTip.Tip="我确定好了！"
+                    Command="{Binding OkCommand}"
+                    Theme="{DynamicResource SolidButton}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

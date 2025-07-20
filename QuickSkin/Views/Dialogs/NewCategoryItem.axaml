@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:QuickSkin.ViewModels.Dialogs"
+             xmlns:u="https://irihi.tech/ursa"
+             x:DataType="dialogs:NewCategoryItemViewModel"
+             x:Class="QuickSkin.Views.Dialogs.NewCategoryItem">
+
+    <Grid RowDefinitions="25,*,Auto" Margin="20" RowSpacing="20">
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+
+            <PathIcon
+                Height="20" Width="20"
+                Data="{StaticResource SemiIconPlusCircle}"
+                Foreground="{DynamicResource SemiGreen5}" />
+
+            <TextBlock Text="新建类别" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+
+        </StackPanel>
+
+        <DockPanel Grid.Row="1" HorizontalSpacing="20" VerticalSpacing="10" Width="500">
+
+            <DockPanel.Styles>
+
+                <Style Selector="DockPanel > StackPanel">
+                    <Setter Property="Spacing" Value="5" />
+                </Style>
+
+            </DockPanel.Styles>
+
+            <StackPanel DockPanel.Dock="Bottom">
+                <TextBlock Text="描述 :" Classes="Tertiary" FontWeight="Bold" />
+                <TextBox Height="150"
+                         CornerRadius="8"
+                         TextWrapping="Wrap"
+                         VerticalContentAlignment="Top"
+                         Padding="8,5"
+                         Text="{Binding Description}" />
+            </StackPanel>
+
+            <u:IconButton Background="Transparent"
+                          BorderBrush="{DynamicResource BorderCardBorderBrush}"
+                          BorderThickness="2"
+                          Command="{Binding SetIconCommand}"
+                          Classes.IconIsNull="{Binding Icon,Converter={x:Static ObjectConverters.IsNull}}"
+                          Classes.IconNotNull="{Binding Icon,Converter={x:Static ObjectConverters.IsNotNull}}"
+                          CornerRadius="8"
+                          Margin="0,5,0,0"
+                          VerticalAlignment="Top"
+                          Height="50" Width="50">
+
+                <u:IconButton.Styles>
+
+                    <Style Selector="u|IconButton.IconIsNull">
+                        <Setter Property="Icon" Value="{StaticResource SemiIconImage}" />
+                        <Setter Property="Foreground" Value="{DynamicResource SemiGrey2}" />
+                    </Style>
+
+                    <Style Selector="u|IconButton.IconNotNull">
+                        <Setter Property="Icon" Value="{Binding Icon}" />
+                        <Setter Property="Foreground" Value="{Binding IconBrush}" />
+                    </Style>
+
+                </u:IconButton.Styles>
+
+            </u:IconButton>
+
+            <StackPanel DockPanel.Dock="Right">
+                <TextBlock Text="名称 :"
+                           FontWeight="Bold" />
+                <TextBox Name="NameTextBlock" CornerRadius="8" Text="{Binding Name}" />
+            </StackPanel>
+
+        </DockPanel>
+
+        <StackPanel Spacing="20" HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal">
+
+            <StackPanel.Styles>
+                <Style Selector="Button">
+                    <Setter Property="CornerRadius" Value="8" />
+                </Style>
+            </StackPanel.Styles>
+
+            <Button Content="取消"
+                    Theme="{DynamicResource OutlineButton}"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="确认"
+                    IsEnabled="{Binding !HasErrors}"
+                    Command="{Binding OkCommand}"
+                    Theme="{DynamicResource SolidButton}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

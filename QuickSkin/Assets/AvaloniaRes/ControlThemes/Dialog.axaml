@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:u="https://irihi.tech/ursa"
                     xmlns:helpers="clr-namespace:Irihi.Avalonia.Shared.Helpers;assembly=Irihi.Avalonia.Shared">
-    
+
     <!-- Add Resources Here -->
     <ControlTheme x:Key="{x:Type u:CustomDialogControl}" TargetType="u:CustomDialogControl">
         <Setter Property="MinWidth" Value="{DynamicResource DialogMinWidth}" />
@@ -61,7 +61,7 @@
                                     <Button
                                         Name="{x:Static u:MessageBoxWindow.PART_CloseButton}"
                                         Grid.Column="1"
-                                        Margin="15"
+                                        Margin="20"
                                         DockPanel.Dock="Right"
                                         VerticalAlignment="Center"
                                         Theme="{DynamicResource OverlayCloseButton}" />
@@ -177,7 +177,7 @@
         <Setter Property="Template">
             <ControlTemplate TargetType="u:DefaultDialogControl">
 
-                <Panel Margin="50">
+                <Panel>
 
                     <Border
                         Name="PART_Border"
@@ -195,7 +195,7 @@
 
                         <Border ClipToBounds="True" CornerRadius="{TemplateBinding CornerRadius}">
 
-                            <Grid RowDefinitions="Auto, *, Auto" Margin="0,20">
+                            <Grid RowDefinitions="Auto, *, Auto">
 
 
                                 <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
@@ -209,7 +209,7 @@
                                     <StackPanel
                                         Grid.Column="0"
                                         Spacing="10"
-                                        Margin="20,0"
+                                        Margin="20"
                                         Orientation="Horizontal">
 
                                         <PathIcon
@@ -234,7 +234,7 @@
                                     <Button
                                         Name="{x:Static u:MessageBoxWindow.PART_CloseButton}"
                                         Grid.Column="1"
-                                        Margin="20,0"
+                                        Margin="20"
                                         DockPanel.Dock="Right"
                                         Theme="{StaticResource OverlayCloseButton}" />
 
@@ -242,7 +242,7 @@
 
                                 <ScrollViewer
                                     Grid.Row="1"
-                                    Margin="10,10,10,0"
+                                    Margin="10,0"
                                     HorizontalScrollBarVisibility="{Binding (ScrollViewer.HorizontalScrollBarVisibility), RelativeSource={RelativeSource TemplatedParent}}"
                                     VerticalScrollBarVisibility="{Binding (ScrollViewer.VerticalScrollBarVisibility), RelativeSource={RelativeSource TemplatedParent}}">
 
@@ -255,7 +255,7 @@
 
                                 <StackPanel
                                     Grid.Row="2"
-                                    Margin="20,20,20,0"
+                                    Margin="20"
                                     IsVisible="{TemplateBinding Buttons}"
                                     Orientation="Horizontal"
                                     HorizontalAlignment="Right"

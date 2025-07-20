@@ -1,0 +1,213 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:viewModels="clr-namespace:QuickSkin.ViewModels"
+             xmlns:pages="clr-namespace:QuickSkin.Views.Pages"
+             x:DataType="viewModels:WorkViewModel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="QuickSkin.Views.WorkView">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:WorkViewModel />
+    </Design.DataContext>
+
+    <UserControl.DataContext>
+        <viewModels:WorkViewModel />
+    </UserControl.DataContext>
+
+    <Grid RowDefinitions="40,*" ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="10,0">
+
+        <!-- 标题文本 -->
+        <TextBlock
+            FontWeight="Bold"
+            Grid.ColumnSpan="2"
+            Margin="10,0"
+            HorizontalAlignment="Left"
+            IsHitTestVisible="False"
+            Text="{Binding $parent[Window].Title}"
+            VerticalAlignment="Center">
+
+            <TextBlock.Foreground>
+                <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
+                    <GradientStop Color="#3A7FF9" Offset="0" />
+                    <GradientStop Color="#092A92" Offset="1" />
+                </LinearGradientBrush>
+            </TextBlock.Foreground>
+
+            <TextBlock.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.1" />
+            </TextBlock.Effect>
+
+        </TextBlock>
+
+        <Grid
+            Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left"
+            RowDefinitions="Auto,*"
+            Width="{Binding NavigationWidth}">
+
+            <Grid.Transitions>
+                <Transitions>
+                    <DoubleTransition
+                        Duration="0:0:0.5"
+                        Easing="CircularEaseOut"
+                        Property="Width" />
+                </Transitions>
+            </Grid.Transitions>
+
+            <!-- 折叠/展开菜单栏按钮 -->
+            <ToggleButton
+                Theme="{StaticResource RotateToggleButton}"
+                HorizontalAlignment="Right"
+                IsChecked="{Binding IsNavigationExpand}"
+                CornerRadius="30"
+                Height="35"
+                Width="35"
+                Margin="10,0"
+                BorderThickness="0">
+
+                <ToggleButton.Styles>
+
+                    <Style Selector="ToggleButton">
+                        <Setter Property="Background" Value="Transparent" />
+
+                        <Style Selector="^:checked /template/ ContentPresenter">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Foreground" Value="{DynamicResource ButtonDefaultPrimaryForeground}" />
+                            <Setter Property="RenderTransform" Value="rotate(180deg)" />
+                        </Style>
+
+                        <Style Selector="^:checked:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource ButtonDefaultPointeroverBackground}" />
+                        </Style>
+
+                        <Style Selector="^:checked:pressed  /template/ ContentPresenter">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource ButtonDefaultPressedBackground}" />
+                        </Style>
+
+                    </Style>
+
+                    <Style Selector="ToggleButton /template/ ContentPresenter">
+                        <Setter Property="Transitions">
+                            <Transitions>
+                                <TransformOperationsTransition Duration="0:0:0.2" Property="RenderTransform" />
+                            </Transitions>
+                        </Setter>
+
+                    </Style>
+                </ToggleButton.Styles>
+
+                <PathIcon Data="{StaticResource SemiIconChevronRight}" Height="10" Width="10" />
+
+            </ToggleButton>
+
+            <u:SelectionList Grid.Row="1" Name="NavigationList" SelectedIndex="0">
+
+                <u:SelectionList.Indicator>
+                    <Border
+                        Background="{DynamicResource SemiBlue5}"
+                        BoxShadow="0 0 10 0 LightGray"
+                        Classes.Expanded="{Binding IsNavigationExpand}"
+                        CornerRadius="8">
+                        <Border.Transitions>
+                            <Transitions>
+                                <TransformOperationsTransition
+                                    Duration="0:0:0.3"
+                                    Easing="CircularEaseOut"
+                                    Property="RenderTransform" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+                </u:SelectionList.Indicator>
+
+                <u:SelectionList.Styles>
+
+                    <Style Selector="Border.Expanded">
+                        <Setter Property="RenderTransform" Value="scale(1.1,1)" />
+                    </Style>
+
+                    <Style Selector="u|SelectionListItem">
+                        <Setter Property="Height" Value="35" />
+                        <Setter Property="Margin" Value="10" />
+                        <Setter Property="Padding" Value="10" />
+                        <Setter Property="Transitions">
+                            <Transitions>
+                                <BrushTransition Duration="0:0:0.3" Property="Foreground" />
+                                <TransformOperationsTransition Duration="0:0:0.3" Property="RenderTransform" />
+                            </Transitions>
+                        </Setter>
+
+                        <Style Selector="^:selected">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="RenderTransform" Value="scale(1.1)" />
+                        </Style>
+                    </Style>
+
+                    <Style Selector="u|SelectionList > StackPanel">
+                        <Setter Property="Spacing" Value="10" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+
+                    <Style Selector="u|SelectionList > StackPanel > TextBlock">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+
+                </u:SelectionList.Styles>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Data="{StaticResource SemiIconBox}" />
+                    <TextBlock Text="管理" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Data="{StaticResource SemiIconSetting}" />
+                    <TextBlock Text="设置" />
+                </StackPanel>
+
+            </u:SelectionList>
+
+            <!--
+            <Separator Grid.Row="2" VerticalAlignment="Top" Margin="10,0,10,10" />
+
+            <Button Grid.Row="3" CornerRadius="8"
+                    Margin="10,0"
+                    Height="35"
+                    Padding="10"
+                    Theme="{DynamicResource OutlineButton}"
+                    Command="{Binding CloseWorkspaceCommand}">
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Data="{StaticResource SemiIconExit}" Height="13" Width="13" />
+                    <TextBlock Text="关闭工作区" VerticalAlignment="Center" />
+                </StackPanel>
+
+            </Button>-->
+
+        </Grid>
+
+        <Carousel Grid.Row="1" Grid.Column="1" SelectedIndex="{Binding #NavigationList.SelectedIndex}">
+
+            <Carousel.PageTransition>
+                <CompositePageTransition>
+                    <CrossFade Duration="0:0:0.5" />
+                    <PageSlide
+                        Duration="0:0:0.3"
+                        Orientation="Vertical"
+                        SlideInEasing="QuadraticEaseIn"
+                        SlideOutEasing="QuadraticEaseOut" />
+                </CompositePageTransition>
+            </Carousel.PageTransition>
+
+            <pages:CategoryPage />
+            <pages:SettingsPage />
+
+        </Carousel>
+
+    </Grid>
+
+</UserControl>

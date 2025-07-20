@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:u="https://irihi.tech/ursa"
                     xmlns:helpers="clr-namespace:Irihi.Avalonia.Shared.Helpers;assembly=Irihi.Avalonia.Shared">
-    
+
     <!-- Add Resources Here -->
     <ControlTheme x:Key="{x:Type u:MessageBoxControl}" TargetType="u:MessageBoxControl">
         <Setter Property="CornerRadius" Value="{StaticResource DialogCornerRadius}" />
@@ -10,7 +10,7 @@
         <Setter Property="u:DialogControlBase.CanDragMove" Value="True" />
         <Setter Property="Template">
             <ControlTemplate TargetType="u:MessageBoxControl">
-                
+
                 <Border
                     Padding="0"
                     Focusable="True"
@@ -25,13 +25,13 @@
                     CornerRadius="{TemplateBinding CornerRadius}"
                     IsHitTestVisible="True"
                     Theme="{DynamicResource CardBorder}">
-                    
+
                     <Border ClipToBounds="True" CornerRadius="{TemplateBinding CornerRadius}">
-                        
+
                         <Grid RowDefinitions="Auto, *, Auto">
-                            
+
                             <Grid Grid.Row="0" ColumnDefinitions="* Auto">
-                                
+
                                 <Panel
                                     Name="{x:Static u:DialogControlBase.PART_TitleArea}"
                                     Grid.Column="0"
@@ -70,15 +70,15 @@
                                     VerticalAlignment="Center"
                                     Theme="{DynamicResource OverlayCloseButton}" />
                             </Grid>
-                            
+
                             <Grid
                                 Grid.Row="1"
                                 MaxWidth="{DynamicResource MessageBoxWindowContentMaxWidth}"
                                 Margin="{TemplateBinding Padding}">
-                                
+
                                 <ScrollViewer
                                     VerticalScrollBarVisibility="Auto">
-                                    
+
                                     <ContentPresenter
                                         Margin="10,0"
                                         Name="PART_ContentPresenter"
@@ -87,31 +87,31 @@
                                         ContentTemplate="{TemplateBinding ContentTemplate}"
                                         TextAlignment="Center"
                                         TextWrapping="Wrap" />
-                                    
+
                                 </ScrollViewer>
-                                
+
                             </Grid>
-                            
+
                             <StackPanel
                                 Grid.Row="2"
                                 Margin="20"
                                 Spacing="20"
                                 HorizontalAlignment="Right"
                                 Orientation="Horizontal">
-                                
+
                                 <Button Name="{x:Static u:MessageBoxControl.PART_CancelButton}" />
                                 <Button Name="{x:Static u:MessageBoxControl.PART_NoButton}" />
                                 <Button Name="{x:Static u:MessageBoxControl.PART_YesButton}" />
                                 <Button Name="{x:Static u:MessageBoxControl.PART_OKButton}" />
-                                
+
                             </StackPanel>
-                            
+
                         </Grid>
-                        
+
                     </Border>
-                    
+
                 </Border>
-                
+
             </ControlTemplate>
         </Setter>
         <Style Selector="^ /template/ Panel#PART_TitleArea">
@@ -190,5 +190,5 @@
             <Setter Property="Data" Value="{DynamicResource DialogSuccessIconGlyph}" />
         </Style>
     </ControlTheme>
-    
+
 </ResourceDictionary>

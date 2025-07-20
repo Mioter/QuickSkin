@@ -1,0 +1,438 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:pages="clr-namespace:QuickSkin.ViewModels.Pages"
+             xmlns:models="clr-namespace:QuickSkin.Models"
+             xmlns:converters="clr-namespace:QuickSkin.UI.Converters"
+             xmlns:behaviors="clr-namespace:QuickSkin.UI.Behaviors"
+             xmlns:utilities="clr-namespace:QuickSkin.Common.Utilities"
+             x:DataType="pages:CategoryPageViewModel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="QuickSkin.Views.Pages.CategoryPage">
+
+    <UserControl.DataContext>
+        <pages:CategoryPageViewModel />
+    </UserControl.DataContext>
+    
+    <UserControl.Resources>
+        <converters:ValueParameterTupleConverter x:Key="ValueParameterTupleConverter"/>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="Auto,*">
+
+        <StackPanel Orientation="Horizontal" Spacing="10" Margin="10,5,10,0">
+            <u:IconButton
+                Command="{Binding AddCategoryItemCommand}"
+                Icon="{StaticResource SemiIconPlus}"
+                ToolTip.Tip="新建类别"
+                Theme="{DynamicResource BorderlessIconButton}" />
+        </StackPanel>
+
+        <ItemsControl
+            Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
+            ItemsSource="{Binding CategoryItems}"
+            FontSize="15"
+            Padding="10">
+
+            <!--<u:SelectionList.Indicator>
+                <Border
+                    Background="{DynamicResource SemiBlue1}"
+                    CornerRadius="8" />
+            </u:SelectionList.Indicator>-->
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemSpacing="10"
+                               LineSpacing="10"
+                               Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.Styles>
+
+                <Style Selector="ItemsControl > ContentPresenter">
+                    <Setter Property="ContextMenu">
+                        <ContextMenu>
+                            <MenuItem
+                                Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).EditCategoryItemCommand}"
+                                CommandParameter="{Binding}"
+                                Header="编辑">
+                                <MenuItem.Icon>
+                                    <PathIcon Data="{StaticResource SemiIconEdit}"
+                                              Margin="2" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+
+                            <MenuItem
+                                Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).DeleteCategoryItemCommand}"
+                                IsVisible="{Binding Name,
+                                            Converter={StaticResource StringUnequalConverter},
+                                            ConverterParameter='未分类',
+                                            DataType=models:CategoryItem}"
+                                CommandParameter="{Binding}"
+                                Header="删除">
+                                <MenuItem.Icon>
+                                    <PathIcon Foreground="{DynamicResource EmphasizePink3}"
+                                              Data="{StaticResource SemiIconDelete}"
+                                              Margin="2" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Setter>
+
+                </Style>
+
+                <!--<Setter Property="(Interaction.Behaviors)">
+                    <BehaviorCollectionTemplate>
+                        <BehaviorCollection>
+                            <DataTrigger
+                                Binding="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).CurrentCategoryItem}"
+                                Value="{Binding DataType=models:CategoryItem}">
+
+                                <ChangeAvaloniaPropertyAction
+                                    TargetProperty="{x:Static ContentPresenter.BackgroundProperty}"
+                                    Value="Transparent" />
+                                <ChangeAvaloniaPropertyAction
+                                    TargetProperty="{x:Static ContentPresenter.BorderBrushProperty}"
+                                    Value="{DynamicResource SemiLightBlue5}" />
+
+                            </DataTrigger>
+                        </BehaviorCollection>
+                    </BehaviorCollectionTemplate>
+                </Setter>-->
+                
+                <Style Selector="u|IconButton.Selected /template/ Border#PART_Background">
+                    <Setter Property="BorderBrush" Value="{DynamicResource SemiLightBlue5}" />
+                </Style>
+
+            </ItemsControl.Styles>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <u:IconButton
+                        CornerRadius="8"
+                        BorderThickness="2"
+                        Background="Transparent"
+                        ToolTip.Tip="{Binding Name}"
+                        Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).SetCurrentCategoryItemCommand}"
+                        CommandParameter="{Binding}"
+                        Classes.IconIsNull="{Binding Icon,Converter={x:Static ObjectConverters.IsNull}}"
+                        Classes.IconNotNull="{Binding Icon,Converter={x:Static ObjectConverters.IsNotNull}}">
+
+                        <Classes.Selected>
+                            <MultiBinding Converter="{StaticResource InstanceEqualityMultiConverter}">
+                                <Binding Path="Id"/>
+                                <Binding
+                                    Path="$parent[UserControl].((pages:CategoryPageViewModel)DataContext).CurrentCategoryItem.Id" />
+                            </MultiBinding>
+                        </Classes.Selected>
+
+                        <u:IconButton.Styles>
+
+                            <Style Selector="u|IconButton.IconIsNull">
+                                <Setter Property="Icon" Value="{StaticResource SemiIconAppCenter}" />
+                                <Setter Property="Foreground" Value="{DynamicResource SemiBlue5}" />
+                            </Style>
+
+                            <Style Selector="u|IconButton.IconNotNull">
+                                <Setter Property="Icon" Value="{Binding Icon}" />
+                                <Setter Property="Foreground" Value="{Binding IconBrush}" />
+                            </Style>
+
+                        </u:IconButton.Styles>
+
+                    </u:IconButton>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            
+            <ItemsControl.ContextMenu>
+
+                <ContextMenu>
+
+                    <MenuItem Header="新建"
+                              Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).AddCategoryItemCommand}">
+                        <MenuItem.Icon>
+                            <PathIcon Data="{StaticResource SemiIconPlus}" Margin="2" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                </ContextMenu>
+
+            </ItemsControl.ContextMenu>
+
+        </ItemsControl>
+
+        <TextBlock
+            Grid.Row="1" Grid.Column="1" FontWeight="Bold"
+            Margin="20,10"
+            Text="{Binding CurrentCategoryItem.Name}"
+            FontSize="15" />
+
+        <ScrollViewer Grid.Row="2" Grid.Column="1">
+            
+            <ItemsControl Background="Transparent"
+                          ItemsSource="{Binding ReleaseItems}"
+                          Padding="20">
+
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl > ContentPresenter">
+
+                        <Setter Property="Transitions">
+                            <Transitions>
+                                <TransformOperationsTransition Duration="0:0:0.2"
+                                                               Property="RenderTransform" />
+                            </Transitions>
+                        </Setter>
+
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu>
+
+                                    <MenuItem
+                                        Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).OpenReleaseItemCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="打开">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource SemiIconPlay}" Margin="4" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                    <MenuItem
+                                        Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).EditReleaseItemCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="编辑">
+                                        <MenuItem.Icon>
+                                            <PathIcon Data="{StaticResource SemiIconEdit}"
+                                                      Margin="2" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                    <MenuItem
+                                        Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).DeleteReleaseItemCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="删除">
+                                        <MenuItem.Icon>
+                                            <PathIcon Foreground="{DynamicResource EmphasizePink3}"
+                                                      Data="{StaticResource SemiIconDelete}"
+                                                      Margin="2" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                    <Style Selector="ItemsControl > ContentPresenter:pointerover">
+                        <Setter Property="RenderTransform" Value="translateY(-8px)" />
+                    </Style>
+
+                </ItemsControl.Styles>
+
+                <ItemsControl.ItemsPanel>
+
+                    <ItemsPanelTemplate>
+                        <WrapPanel LineSpacing="20" ItemSpacing="20" />
+                    </ItemsPanelTemplate>
+
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+
+                    <DataTemplate>
+
+                        <Panel DragDrop.AllowDrop="True">
+
+                            <Border CornerRadius="12"
+                                    Classes.Pointerover="{Binding $parent[Panel].IsPointerOver}"
+                                    Classes.NoPointerover="{Binding !$parent[Panel].IsPointerOver}">
+
+                                <Border.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="0.98" />
+                                        <TranslateTransform Y="5" />
+                                    </TransformGroup>
+                                </Border.RenderTransform>
+
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <BrushTransition Property="Background" Duration="0:0:0.25" />
+                                    </Transitions>
+                                </Border.Transitions>
+
+                                <Border.Effect>
+                                    <BlurEffect Radius="20" />
+                                </Border.Effect>
+
+                                <Border.Styles>
+
+                                    <Style Selector="Border.NoPointerover">
+                                        <Setter Property="Background" Value="LightGray" />
+                                    </Style>
+
+                                    <Style Selector="Border.Pointerover">
+
+                                        <Setter Property="Background">
+                                            <LinearGradientBrush>
+                                                <GradientStop Offset="0" Color="#886094EA" />
+                                                <GradientStop Offset="1" Color="#88F02FC2" />
+                                            </LinearGradientBrush>
+                                        </Setter>
+
+                                        <Style.Animations>
+                                            <Animation
+                                                Duration="0:0:3"
+                                                FillMode="Forward"
+                                                IterationCount="Infinite">
+                                                <KeyFrame Cue="0%">
+                                                    <Setter
+                                                        Property="behaviors:BorderLinearGradientBrushBehavior.BackgroundRotateAngle"
+                                                        Value="0" />
+                                                </KeyFrame>
+                                                <KeyFrame Cue="100%">
+                                                    <Setter
+                                                        Property="behaviors:BorderLinearGradientBrushBehavior.BackgroundRotateAngle"
+                                                        Value="360" />
+                                                </KeyFrame>
+                                            </Animation>
+                                        </Style.Animations>
+                                    </Style>
+
+                                </Border.Styles>
+                            </Border>
+
+                            <Button
+                                Padding="10"
+                                BorderThickness="2"
+                                Foreground="{DynamicResource TextBlockDefaultForeground}"
+                                CornerRadius="12" Background="{DynamicResource SemiColorBackground3}">
+
+                                <Button.Styles>
+                                    <Style Selector="Button">
+
+                                        <Style
+                                            Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                            <Setter Property="Background"
+                                                    Value="{DynamicResource SemiColorBackground3}" />
+                                        </Style>
+
+                                    </Style>
+                                </Button.Styles>
+
+                                <DockPanel
+                                    Height="60"
+                                    Width="160"
+                                    HorizontalSpacing="10">
+
+                                    <Border DockPanel.Dock="Left"
+                                            CornerRadius="12"
+                                            VerticalAlignment="Top">
+
+                                        <Border CornerRadius="12"
+                                                ClipToBounds="True">
+                                            <Image
+                                                Source="{Binding Icon}" />
+                                        </Border>
+
+                                    </Border>
+
+                                    <StackPanel DockPanel.Dock="Top" Spacing="3">
+
+                                        <TextBlock
+                                            TextTrimming="CharacterEllipsis"
+                                            Text="{Binding Name}"
+                                            FontWeight="Bold" />
+
+                                        <Separator Margin="0" />
+
+                                        <TextBlock DockPanel.Dock="Bottom"
+                                                   Text="{Binding Description}"
+                                                   MaxLines="2"
+                                                   FontSize="12"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="Wrap"
+                                                   Classes="Tertiary" />
+
+                                    </StackPanel>
+
+                                </DockPanel>
+
+                                <Interaction.Behaviors>
+
+                                    <DragEnterEventTrigger>
+                                        <ChangeAvaloniaPropertyAction
+                                            TargetProperty="{x:Static TemplatedControl.BorderBrushProperty}"
+                                            Value="{DynamicResource SemiBlue5}" />
+                                    </DragEnterEventTrigger>
+
+                                    <DragLeaveEventTrigger>
+                                        <ChangeAvaloniaPropertyAction
+                                            TargetProperty="{x:Static TemplatedControl.BorderBrushProperty}"
+                                            Value="Transparent" />
+                                    </DragLeaveEventTrigger>
+
+                                    <DropEventTrigger>
+                                        <ChangeAvaloniaPropertyAction
+                                            TargetProperty="{x:Static TemplatedControl.BorderBrushProperty}"
+                                            Value="Transparent" />
+                                        <InvokeCommandAction
+                                            Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).DropReleaseItemCommand}"
+                                            PassEventArgsToCommand="True"
+                                            InputConverter="{StaticResource ValueParameterTupleConverter}"
+                                            InputConverterParameter="{Binding}"/>
+                                    </DropEventTrigger>
+                                </Interaction.Behaviors>
+
+                            </Button>
+
+                            <PathIcon Data="{StaticResource SemiIconBookmark}"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Top"
+                                      Foreground="{x:Static utilities:ColorGenerator.RandomColor}"
+                                      Height="15">
+                                <PathIcon.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="135" />
+                                        <TranslateTransform X="-3" Y="-3" />
+                                    </TransformGroup>
+                                </PathIcon.RenderTransform>
+                            </PathIcon>
+
+                        </Panel>
+
+                    </DataTemplate>
+
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ContextMenu>
+
+                    <ContextMenu>
+
+                        <MenuItem Header="新建"
+                                  Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).AddNewReleaseItemCommand}">
+                            <MenuItem.Icon>
+                                <PathIcon Data="{StaticResource SemiIconPlus}" Margin="2" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                    </ContextMenu>
+
+                </ItemsControl.ContextMenu>
+
+            </ItemsControl>
+
+        </ScrollViewer>
+
+        <Button Grid.Row="2" Grid.Column="1" CornerRadius="8" VerticalAlignment="Top" HorizontalAlignment="Left"
+                Theme="{StaticResource OutlineButton}"
+                Margin="20,10"
+                
+                Command="{Binding AddNewReleaseItemCommand}"
+                IsVisible="{Binding !ReleaseItems.Count}" Content="新建">
+        </Button>
+
+    </Grid>
+
+</UserControl>

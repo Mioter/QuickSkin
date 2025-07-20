@@ -1,4 +1,4 @@
-using QuickSkin.Definitions.Enums;
+using QuickSkin.Core.Enums;
 
 namespace QuickSkin.Models;
 

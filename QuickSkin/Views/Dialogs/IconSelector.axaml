@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:models="clr-namespace:QuickSkin.Models"
+             xmlns:dialogs="clr-namespace:QuickSkin.ViewModels.Dialogs"
+             x:DataType="dialogs:IconSelectorViewModel"
+             x:Class="QuickSkin.Views.Dialogs.IconSelector">
+
+    <Grid RowDefinitions="40,Auto,*,Auto">
+
+        <TextBlock Text="图标选择"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Margin="20,0" />
+
+        <Panel Grid.Row="1" Margin="20,10,20,20">
+
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Spacing="20">
+                
+                <u:IconButton
+                    Icon="{StaticResource SemiIconPlus}"
+                    Theme="{DynamicResource BorderlessIconButton}" />
+
+                <TextBox CornerRadius="12" MinWidth="120" Watermark="搜索图标" Text="{Binding SearchText}" />
+                
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Right">
+                <Button
+                    Background="{Binding SelectedIconColor,Converter={StaticResource ToBrushConverter}}"
+                    BorderBrush="{Binding $self.Foreground}"
+                    Foreground="{Binding $self.Background, Converter={StaticResource ContrastBrushConverter}}"
+                    Content="颜色">
+                    <Button.Effect>
+                        <DropShadowEffect
+                            BlurRadius="8"
+                            Color="{Binding SelectedIconColor}"
+                            OffsetX="0"
+                            OffsetY="0" />
+                    </Button.Effect>
+                    <Button.Flyout>
+                        <Flyout Placement="Top">
+                            <ColorView Color="{Binding SelectedIconColor}" ColorSpectrumShape="Ring"/>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+        </Panel>
+
+        <Separator Grid.Row="1" VerticalAlignment="Bottom" Margin="20,0" />
+
+        <ListBox Grid.Row="2"
+                 SelectedItem="{Binding SelectedIconItem}"
+                 ItemsSource="{Binding FilteredStrokedIcons}"
+                 Margin="20,0"
+                 Height="500"
+                 Width="800">
+
+            <ListBox.Styles>
+
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="10" />
+                    <Setter Property="CornerRadius" Value="8" />
+                    <Setter Property="ToolTip.Tip" Value="{Binding ResourceKey,DataType=models:IconItem}" />
+                    <Setter Property="BorderThickness" Value="2" />
+                </Style>
+
+                <Style Selector="ListBoxItem:selected">
+                    <Setter Property="BorderBrush" Value="{DynamicResource SemiLightBlue5}" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+
+            </ListBox.Styles>
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemSpacing="20" LineSpacing="20" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <PathIcon
+                        Theme="{DynamicResource InnerPathIcon}"
+                        HorizontalAlignment="Center"
+                        Classes="ExtraLarge"
+                        Foreground="{Binding $parent[ListBox].((dialogs:IconSelectorViewModel)DataContext).SelectedIconBrush}"
+                        Height="15" Width="15"
+                        Data="{Binding Geometry}" />
+                </DataTemplate>
+
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+        <StackPanel Grid.Row="3" Margin="20" Spacing="20" HorizontalAlignment="Right" Orientation="Horizontal">
+
+            <Button ToolTip.Tip="还是蒜了吧..."
+                    Content="取消"
+                    Theme="{DynamicResource OutlineButton}"
+                    Command="{Binding CancelCommand}" />
+
+            <Button Content="确认"
+                    IsEnabled="{Binding SelectedIconItem,Converter={x:Static ObjectConverters.IsNotNull}}"
+                    ToolTip.Tip="我确定好了！"
+                    Command="{Binding OkCommand}"
+                    Theme="{DynamicResource SolidButton}" />
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

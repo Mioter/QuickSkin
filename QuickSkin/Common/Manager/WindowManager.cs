@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using QuickSkin.Definitions.ClassBase;
+using QuickSkin.Core.ClassBase;
 using QuickSkin.Views;
 
 namespace QuickSkin.Common.Manager;
@@ -9,10 +9,11 @@ public static class WindowManager
 {
     public static InteractiveWindowBase? TopLevel { get; private set; }
 
-    public static void OpenWorkspace(string name)
+    public static void OpenWorkspace()
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
+
         var mainWindow = new WorkWindow();
         mainWindow.Show();
 

@@ -1,8 +1,10 @@
 using System;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using QuickSkin.Common.Manager;
+using QuickSkin.Models;
 using Notification = Ursa.Controls.Notification;
 using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
 
@@ -13,10 +15,15 @@ public static class NotificationService
     public static WindowNotificationManager? NotificationManager { get; } =
         WindowNotificationManager.TryGetNotificationManager(WindowManager.TopLevel, out var manager)
             ? manager
-            : new WindowNotificationManager(WindowManager.TopLevel) { Margin = new Thickness(0, 40, 0, 0) };
+            : new WindowNotificationManager(WindowManager.TopLevel)
+            {
+                Margin = new Thickness(0, 40, 0, 0),
+            };
+    
+    public static AvaloniaList<NotificationItem> Notifications { get; } = [];
 
     /// <summary>
-    /// 根据消息文本长度自动计算合适的显示时间
+    ///     根据消息文本长度自动计算合适的显示时间
     /// </summary>
     /// <param name="message">消息文本</param>
     /// <param name="customExpiration">自定义过期时间，如果为null则自动计算</param>
@@ -52,11 +59,22 @@ public static class NotificationService
         Action? onClick = null,
         Action? onClose = null,
         string[]? classes = null
-    )
+        )
     {
         Dispatcher.UIThread.Post(() =>
         {
             var calculatedExpiration = CalculateExpiration(message, expiration);
+
+            // 创建 NotificationItem 并添加到列表
+            var item = new NotificationItem
+            {
+                Title = title,
+                Message = message,
+                Type = type,
+                Time = DateTime.Now,
+            };
+            Notifications.Add(item);
+
             NotificationManager?.Show(
                 new Notification(title, message),
                 type,
@@ -79,11 +97,22 @@ public static class NotificationService
         bool showClose = true,
         Action? onClick = null,
         Action? onClose = null
-    )
+        )
     {
         Dispatcher.UIThread.Post(() =>
         {
             var calculatedExpiration = CalculateExpiration(message, expiration);
+
+            // 创建 NotificationItem 并添加到列表
+            var item = new NotificationItem
+            {
+                Title = title,
+                Message = message,
+                Type = type,
+                Time = DateTime.Now,
+            };
+            Notifications.Add(item);
+
             NotificationManager?.Show(
                 new Notification(title, message),
                 type,

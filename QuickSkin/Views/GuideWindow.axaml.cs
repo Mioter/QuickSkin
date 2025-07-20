@@ -1,5 +1,5 @@
 using System;
-using QuickSkin.Definitions.ClassBase;
+using QuickSkin.Core.ClassBase;
 using QuickSkin.ViewModels;
 
 namespace QuickSkin.Views;

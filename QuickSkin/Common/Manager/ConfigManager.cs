@@ -11,13 +11,13 @@ public static class ConfigManager
         ConfigModelJsonContext.Default
     );
 
-    public static ConfigModel ConfigModel { get; set; }
-
     static ConfigManager()
     {
         // 静态构造时自动加载配置（同步）
         ConfigModel = _service.Load();
     }
+
+    public static ConfigModel ConfigModel { get; set; }
 
     public static void Save()
     {

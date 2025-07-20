@@ -2,9 +2,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:QuickSkin.ViewModels.Pages"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:anchorControl="clr-namespace:QuickSkin.UI.Controls.AnchorControl"
+             x:DataType="pages:SettingsPageViewModel"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="QuickSkin.Views.Pages.SettingsPage">
-    
-    
-    
+
+    <UserControl.DataContext>
+        <pages:SettingsPageViewModel />
+    </UserControl.DataContext>
+
+    <Grid ColumnDefinitions="Auto,*">
+        
+        <u:SelectionList Grid.Column="0" Name="NavigationList" SelectedIndex="0">
+
+            <u:SelectionList.Indicator>
+                <Border
+                    Width="5" Height="15"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource SemiBlue5}"
+                    CornerRadius="3" />
+            </u:SelectionList.Indicator>
+
+            <u:SelectionList.Styles>
+
+                <Style Selector="u|SelectionListItem">
+                    <Setter Property="Margin" Value="10,0" />
+                    <Setter Property="Padding" Value="10" />
+
+                    <Style Selector="^:selected">
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </Style>
+                </Style>
+
+                <Style Selector="u|SelectionList > TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="10,0" />
+                </Style>
+
+            </u:SelectionList.Styles>
+
+            <TextBlock Text="系统" />
+            
+        </u:SelectionList>
+
+        <anchorControl:Anchor Grid.Column="1" IndexSource="{Binding ElementName=NavigationList}">
+            
+            <anchorControl:Anchor.DataTemplates>
+                
+                <DataTemplate DataType="x:String">
+                    <TextBlock FontSize="16" Text="{Binding}" FontWeight="Bold"/>
+                </DataTemplate>
+
+            </anchorControl:Anchor.DataTemplates>
+            
+            <anchorControl:AnchorItem Header="系统">
+                <StackPanel u:Anchor.Id="s1" Spacing="10">
+                    <Panel>
+                        <TextBlock Text="在窗口关闭时" VerticalAlignment="Center" />
+                        <ComboBox
+                            HorizontalAlignment="Right"
+                            ItemsSource="{Binding ClosingBehaviors}"
+                            DisplayMemberBinding="{Binding Value}"
+                            SelectedValueBinding="{Binding Key}"
+                            SelectedValue="{Binding Config.ClosingBehavior}" />
+                    </Panel>
+                </StackPanel>
+            </anchorControl:AnchorItem>
+        </anchorControl:Anchor>
+    </Grid>
+
 </UserControl>

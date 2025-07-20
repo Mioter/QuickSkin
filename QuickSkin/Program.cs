@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using Avalonia;
+using QuickSkin.Common;
 using Serilog;
 
 namespace QuickSkin;
 
-sealed class Program
+internal sealed class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -14,7 +16,7 @@ sealed class Program
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.File(
-                "logs/log-.txt",
+                Path.Combine(StaticConfig.LoggerPath, "log-.txt"),
                 rollingInterval: RollingInterval.Day,
                 outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
                 retainedFileCountLimit: 7 // 只保留最近7天日志
@@ -25,6 +27,8 @@ sealed class Program
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().LogToTrace();
+    public static AppBuilder BuildAvaloniaApp()
+    {
+        return AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().LogToTrace();
+    }
 }
