@@ -35,7 +35,7 @@ public static class CacheManager
         repo.DeleteImage(id);
         ImageCache.Remove(id);
     }
-    
+
     /// <summary>
     ///     通过图片Id集合批量删除图片，先从数据库删除，然后从缓存删除。
     /// </summary>
@@ -49,7 +49,7 @@ public static class CacheManager
             ImageCache.Remove(id);
         }
     }
-    
+
     /// <summary>
     ///     获取默认图片
     /// </summary>

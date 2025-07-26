@@ -6,7 +6,7 @@
     <Thickness x:Key="MenuFlyoutPadding">5</Thickness>
 
     <ControlTheme x:Key="{x:Type ContextMenu}" TargetType="ContextMenu">
-        <Setter Property="Background" Value="{DynamicResource MenuFlyoutBackground}" />
+        <Setter Property="Background" Value="{DynamicResource SemiColorBackground2}" />
         <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutBorderBrush}" />
         <Setter Property="BorderThickness" Value="{DynamicResource MenuFlyoutBorderThickness}" />
         <Setter Property="CornerRadius" Value="{DynamicResource MenuFlyoutCornerRadius}" />

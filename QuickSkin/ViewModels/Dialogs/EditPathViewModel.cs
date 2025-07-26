@@ -44,8 +44,8 @@ public partial class EditPathViewModel : DataVerifyModelBase, IDialogContext
         var topLevel = WindowManager.TopLevel;
 
         if (topLevel == null)
-            return ;
-        
+            return;
+
         string? selectedPath = await PathSelector.OpenFolderAsync(topLevel);
 
         if (selectedPath == null)
@@ -77,7 +77,7 @@ public partial class EditPathViewModel : DataVerifyModelBase, IDialogContext
         }
 
         // 检查是否包含非法字符
-        var isValidPathCharactersAttribute = new IsValidPathCharactersAttribute();
+        var isValidPathCharactersAttribute = new ValidPathCharactersAttribute();
 
         if (!isValidPathCharactersAttribute.IsValid(value))
         {

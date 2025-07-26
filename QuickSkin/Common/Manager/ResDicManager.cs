@@ -1,92 +1,163 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace QuickSkin.Common.Manager;
 
 /// <summary>
-///     管理 Avalonia 应用程序资源
+///     资源字典动态管理器
 /// </summary>
 public static class ResDicManager
 {
+    // 存储已加载的资源字典及其对应的URI
+    private static readonly Dictionary<string, ResourceDictionary> _loadedResourceDictionaries = new();
+
     /// <summary>
-    ///     通过键获取指定类型的资源
+    ///     加载资源字典文件
     /// </summary>
-    /// <typeparam name="T">要获取的资源类型</typeparam>
-    /// <param name="key">资源的键</param>
-    /// <returns>如果找到并且类型正确, 则返回资源; 否则, 返回该类型的默认值。</returns>
-    public static T? Get<T>(object key)
+    /// <param name="uri">资源字典文件的URI</param>
+    /// <param name="key">资源字典的唯一标识符</param>
+    /// <returns>如果成功加载资源字典，则返回 true；否则返回 false。</returns>
+    public static bool LoadResourceDictionary(Uri uri, string key)
     {
-        if (
-            Application.Current != null
-         && Application.Current.TryGetResource(key, out object? resource)
-         && resource is T typedResource
-        )
+        try
         {
-            return typedResource;
+            // 检查是否已加载相同键的资源字典
+            if (_loadedResourceDictionaries.ContainsKey(key))
+            {
+                return false; // 已存在相同键的资源字典
+            }
+
+            // 加载资源字典
+            var resourceDictionary = (ResourceDictionary)AvaloniaXamlLoader.Load(uri);
+
+            // 将资源字典添加到应用程序的合并字典中
+            if (Application.Current == null) return false;
+
+            // 添加到合并字典
+            Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+
+            // 保存引用以便后续卸载
+            _loadedResourceDictionaries[key] = resourceDictionary;
+
+            return true;
         }
+        catch (Exception ex)
+        {
+            // 记录异常信息
+            Debug.WriteLine($"加载资源字典失败: {ex.Message}");
 
-        return default;
+            return false;
+        }
     }
 
     /// <summary>
-    ///     使用指定的键添加新资源
+    ///     卸载资源字典
     /// </summary>
-    /// <param name="key">新资源的键</param>
-    /// <param name="resource">要添加的资源</param>
-    /// <returns>如果成功添加资源, 则返回 true; 否则返回 false。</returns>
-    public static bool Add(object key, object resource)
+    /// <param name="key">资源字典的唯一标识符</param>
+    /// <returns>如果成功卸载资源字典，则返回 true；否则返回 false。</returns>
+    public static bool UnloadResourceDictionary(string key)
     {
-        return Application.Current != null && Application.Current.Resources.TryAdd(key, resource);
+        try
+        {
+            // 检查资源字典是否已加载
+            if (!_loadedResourceDictionaries.TryGetValue(key, out var resourceDictionary))
+            {
+                return false; // 未找到指定键的资源字典
+            }
+
+            // 从应用程序的合并字典中移除
+            if (Application.Current == null) return false;
+
+            Application.Current.Resources.MergedDictionaries.Remove(resourceDictionary);
+
+            // 从已加载字典集合中移除
+            _loadedResourceDictionaries.Remove(key);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // 记录异常信息
+            Debug.WriteLine($"卸载资源字典失败: {ex.Message}");
+
+            return false;
+        }
     }
 
     /// <summary>
-    ///     替换或添加指定键的资源
+    ///     获取已加载的资源字典列表
     /// </summary>
-    /// <param name="key">要替换或添加的资源的键</param>
-    /// <param name="resource">新资源</param>
-    public static void Set(object key, object resource)
+    /// <returns>已加载的资源字典键列表</returns>
+    public static IEnumerable<string> GetLoadedResourceDictionaryKeys()
     {
-        if (Application.Current == null)
-            return;
-
-        Application.Current.Resources[key] = resource;
+        return _loadedResourceDictionaries.Keys;
     }
 
     /// <summary>
-    ///     重命名资源键
+    ///     检查资源字典是否已加载
     /// </summary>
-    /// <param name="oldKey">资源的当前键</param>
-    /// <param name="newKey">资源的新键</param>
-    /// <returns>如果键成功重命名, 则返回 true; 否则返回 false。</returns>
-    public static bool RenameKey(object oldKey, object newKey)
+    /// <param name="key">资源字典的唯一标识符</param>
+    /// <returns>如果资源字典已加载，则返回 true；否则返回 false。</returns>
+    public static bool IsResourceDictionaryLoaded(string key)
     {
-        if (oldKey.Equals(newKey) || Application.Current == null)
+        return _loadedResourceDictionaries.ContainsKey(key);
+    }
+
+    /// <summary>
+    ///     从文件加载资源字典
+    /// </summary>
+    /// <param name="filePath">资源字典文件的路径</param>
+    /// <param name="key">资源字典的唯一标识符</param>
+    /// <returns>如果成功加载资源字典，则返回 true；否则返回 false。</returns>
+    public static bool LoadResourceDictionaryFromFile(string filePath, string key)
+    {
+        if (!File.Exists(filePath))
         {
             return false;
         }
 
-        if (Application.Current.Resources.ContainsKey(newKey))
+        try
         {
-            // 新键已存在, 无法重命名
+            // 创建URI
+            var uri = new Uri(filePath, UriKind.Absolute);
+
+            return LoadResourceDictionary(uri, key);
+        }
+        catch (Exception ex)
+        {
+            // 记录异常信息
+            Debug.WriteLine($"从文件加载资源字典失败: {ex.Message}");
+
             return false;
         }
-
-        if (!Application.Current.Resources.Remove(oldKey, out object? resource))
-            return false;
-
-        Application.Current.Resources.Add(newKey, resource);
-
-        return true;
     }
 
     /// <summary>
-    ///     通过其键删除资源
+    ///     从嵌入资源加载资源字典
     /// </summary>
-    /// <param name="key">要删除的资源的键</param>
-    /// <returns>如果成功删除了资源, 则返回 true; 否则返回 false。</returns>
-    public static bool Remove(object key)
+    /// <param name="resourceUri">资源URI，例如 "avares://AssemblyName/Assets/Theme.axaml"</param>
+    /// <param name="key">资源字典的唯一标识符</param>
+    /// <returns>如果成功加载资源字典，则返回 true；否则返回 false。</returns>
+    public static bool LoadResourceDictionaryFromResource(string resourceUri, string key)
     {
-        return Application.Current != null && Application.Current.Resources.Remove(key);
+        try
+        {
+            // 创建URI
+            var uri = new Uri(resourceUri);
+
+            return LoadResourceDictionary(uri, key);
+        }
+        catch (Exception ex)
+        {
+            // 记录异常信息
+            Debug.WriteLine($"从资源加载资源字典失败: {ex.Message}");
+
+            return false;
+        }
     }
 }

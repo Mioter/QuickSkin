@@ -56,7 +56,7 @@
             </Panel.Styles>
 
             <StackPanel HorizontalAlignment="Left" Spacing="10">
-                <Button ToolTip.Tip="关闭工作区" 
+                <Button ToolTip.Tip="关闭工作区"
                         Command="{Binding CloseWorkspaceCommand}">
                     <PathIcon Data="{StaticResource SemiIconClear}" />
                 </Button>

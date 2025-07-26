@@ -5,20 +5,20 @@
              x:DataType="dialogs:ArchiveSelectorViewModel"
              x:Class="QuickSkin.Views.Dialogs.ArchiveSelector">
 
-    <Grid RowDefinitions="40,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" >
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="200"/>
-            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition MinWidth="200" />
+            <ColumnDefinition MinWidth="200" />
         </Grid.ColumnDefinitions>
-        
-        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="选则项目"
+
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="选择项目"
                    FontWeight="Bold"
                    VerticalAlignment="Center"
-                   Margin="20,0" />
+                   Margin="20,10" />
 
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="10"
-                    Margin="20,0,20,10">
+                    Margin="20,10">
             <ToggleButton Classes="OutlineToggleButton" ToolTip.Tip="全选" IsChecked="{Binding IsSelectAll}" Height="32"
                           Width="32" Padding="8">
                 <PathIcon Data="{StaticResource SemiIconCheckList}" />
@@ -26,12 +26,12 @@
         </StackPanel>
 
         <Border Grid.Row="2" Grid.Column="0" BorderThickness="1"
-                Margin="20,0,10,0"
+                Margin="20,0,10,20"
                 BorderBrush="{DynamicResource BorderCardBorderBrush}" CornerRadius="12">
 
             <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto">
 
-                <ItemsControl Margin="10" ItemsSource="{Binding AllFileItems}" >
+                <ItemsControl Margin="10" ItemsSource="{Binding AllFileItems}">
 
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -49,7 +49,8 @@
                                 IsChecked="{Binding IsSelected}"
                                 Command="{Binding $parent[UserControl].((dialogs:ArchiveSelectorViewModel)DataContext).SelectFileCommand}"
                                 FontWeight="Normal"
-                                CommandParameter="{Binding Content}" Content="{Binding Content}" />
+                                CommandParameter="{Binding }"
+                                Content="{Binding Content}" />
 
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -60,10 +61,11 @@
 
         </Border>
 
-        <GridSplitter Grid.Row="2" Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+        <GridSplitter Grid.Row="2" Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Left"
+                      Margin="-3,0,0,20" />
 
         <Border Grid.Row="2" Grid.Column="1" BorderThickness="1"
-                Margin="10,0,20,0"
+                Margin="10,0,20,20"
                 BorderBrush="{DynamicResource BorderCardBorderBrush}"
                 CornerRadius="12">
 
@@ -100,7 +102,10 @@
 
         </Border>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="20" Spacing="20"
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"
+                   Text="{Binding OutputPath,StringFormat='文件将被解压到: {0}'}" />
+
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="20" Spacing="20"
                     HorizontalAlignment="Right" Orientation="Horizontal">
 
             <Button ToolTip.Tip="还是蒜了吧..."

@@ -14,9 +14,8 @@ namespace QuickSkin.ViewModels.Dialogs;
 
 public partial class IconSelectorViewModel : ObservableObject, IDialogContext
 {
-    private readonly Icons? _resources = new();
-
     private readonly Dictionary<string, IconItem> _filledIcons = new();
+    private readonly Icons? _resources = new();
 
     [ObservableProperty] public partial string? SearchText { get; set; }
 
@@ -30,7 +29,7 @@ public partial class IconSelectorViewModel : ObservableObject, IDialogContext
 
     public AvaloniaList<IconItem> FilteredStrokedIcons { get; set; } = [];
 
-    public void InitializeResources()
+    public void InitializeResources(string? defaultSelectedIcon = null)
     {
         if (_resources is null) return;
 
@@ -45,7 +44,7 @@ public partial class IconSelectorViewModel : ObservableObject, IDialogContext
 
                 if (key is not string keyStr)
                     continue;
-                
+
                 var icon = new IconItem
                 {
                     ResourceKey = keyStr,
@@ -54,12 +53,17 @@ public partial class IconSelectorViewModel : ObservableObject, IDialogContext
 
                 if (!keyStr.EndsWith("Stroked"))
                 {
-                    _filledIcons[keyStr.ToLowerInvariant()] = icon;
+                    _filledIcons[keyStr] = icon;
                 }
             }
         }
 
         OnSearchTextChanged(string.Empty);
+
+        if (defaultSelectedIcon != null && _filledIcons.TryGetValue(defaultSelectedIcon, out var filledIcon))
+        {
+            SelectedIconItem = filledIcon;
+        }
     }
 
     partial void OnSearchTextChanged(string? value)

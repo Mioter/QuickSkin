@@ -6,7 +6,7 @@
              Width="500"
              x:Class="QuickSkin.Views.Dialogs.EditPath">
 
-    <Grid RowDefinitions="25,*,Auto" Margin="20" RowSpacing="20">
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="20">
 
         <StackPanel Orientation="Horizontal" Spacing="10">
 

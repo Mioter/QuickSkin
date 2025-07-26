@@ -15,14 +15,14 @@
     <UserControl.DataContext>
         <pages:CategoryPageViewModel />
     </UserControl.DataContext>
-    
+
     <UserControl.Resources>
-        <converters:ValueParameterTupleConverter x:Key="ValueParameterTupleConverter"/>
+        <converters:ValueParameterTupleConverter x:Key="ValueParameterTupleConverter" />
     </UserControl.Resources>
 
     <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="Auto,*">
 
-        <StackPanel Orientation="Horizontal" Spacing="10" Margin="10,5,10,0">
+        <StackPanel Orientation="Horizontal" Spacing="10" Margin="10,0">
             <u:IconButton
                 Command="{Binding AddCategoryItemCommand}"
                 Icon="{StaticResource SemiIconPlus}"
@@ -84,36 +84,13 @@
 
                 </Style>
 
-                <!--<Setter Property="(Interaction.Behaviors)">
-                    <BehaviorCollectionTemplate>
-                        <BehaviorCollection>
-                            <DataTrigger
-                                Binding="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).CurrentCategoryItem}"
-                                Value="{Binding DataType=models:CategoryItem}">
-
-                                <ChangeAvaloniaPropertyAction
-                                    TargetProperty="{x:Static ContentPresenter.BackgroundProperty}"
-                                    Value="Transparent" />
-                                <ChangeAvaloniaPropertyAction
-                                    TargetProperty="{x:Static ContentPresenter.BorderBrushProperty}"
-                                    Value="{DynamicResource SemiLightBlue5}" />
-
-                            </DataTrigger>
-                        </BehaviorCollection>
-                    </BehaviorCollectionTemplate>
-                </Setter>-->
-                
-                <Style Selector="u|IconButton.Selected /template/ Border#PART_Background">
-                    <Setter Property="BorderBrush" Value="{DynamicResource SemiLightBlue5}" />
-                </Style>
-
             </ItemsControl.Styles>
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <u:IconButton
                         CornerRadius="8"
-                        BorderThickness="2"
+                        BorderThickness="0"
                         Background="Transparent"
                         ToolTip.Tip="{Binding Name}"
                         Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).SetCurrentCategoryItemCommand}"
@@ -123,13 +100,22 @@
 
                         <Classes.Selected>
                             <MultiBinding Converter="{StaticResource InstanceEqualityMultiConverter}">
-                                <Binding Path="Id"/>
+                                <Binding Path="Id" />
                                 <Binding
                                     Path="$parent[UserControl].((pages:CategoryPageViewModel)DataContext).CurrentCategoryItem.Id" />
                             </MultiBinding>
                         </Classes.Selected>
 
                         <u:IconButton.Styles>
+                            
+                            <Style Selector="u|IconButton.Selected /template/ Border#PART_Background">
+                                <Setter Property="BorderBrush"
+                                        Value="{Binding $parent[u:IconButton].Foreground, DataType=models:CategoryItem}" />
+                                <Setter Property="Background"
+                                        Value="{Binding $parent[u:IconButton].Foreground,
+                            Converter={StaticResource SolidColorBrushToTransparentConverter},
+                            DataType=models:CategoryItem}" />
+                            </Style>
 
                             <Style Selector="u|IconButton.IconIsNull">
                                 <Setter Property="Icon" Value="{StaticResource SemiIconAppCenter}" />
@@ -146,7 +132,7 @@
                     </u:IconButton>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-            
+
             <ItemsControl.ContextMenu>
 
                 <ContextMenu>
@@ -171,18 +157,22 @@
             FontSize="15" />
 
         <ScrollViewer Grid.Row="2" Grid.Column="1">
-            
+
             <ItemsControl Background="Transparent"
                           ItemsSource="{Binding ReleaseItems}"
                           Padding="20">
 
                 <ItemsControl.Styles>
+
                     <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="RenderTransform" Value="scale(0)" />
 
                         <Setter Property="Transitions">
                             <Transitions>
-                                <TransformOperationsTransition Duration="0:0:0.2"
-                                                               Property="RenderTransform" />
+                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3"
+                                                               Easing="QuarticEaseInOut" />
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="CubicEaseInOut" />
                             </Transitions>
                         </Setter>
 
@@ -223,10 +213,24 @@
                                 </ContextMenu>
                             </Setter.Value>
                         </Setter>
-                    </Style>
 
-                    <Style Selector="ItemsControl > ContentPresenter:pointerover">
-                        <Setter Property="RenderTransform" Value="translateY(-8px)" />
+                        <Setter Property="(Interaction.Behaviors)">
+                            <BehaviorCollectionTemplate>
+                                <BehaviorCollection>
+                                    <LoadedTrigger>
+                                        <AddClassAction ClassName="LoadedAnimation" />
+                                        <!--<InvokeCommandAction
+                                            Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).StartLoadingAnimationCommand }"
+                                            CommandParameter="{Binding $parent[ContentPresenter]}" />-->
+                                    </LoadedTrigger>
+                                </BehaviorCollection>
+                            </BehaviorCollectionTemplate>
+                        </Setter>
+
+                        <Style Selector="^:pointerover">
+                            <Setter Property="RenderTransform" Value="translateY(-8px)" />
+                        </Style>
+
                     </Style>
 
                 </ItemsControl.Styles>
@@ -269,7 +273,7 @@
                                 <Border.Styles>
 
                                     <Style Selector="Border.NoPointerover">
-                                        <Setter Property="Background" Value="LightGray" />
+                                        <Setter Property="Background" Value="{DynamicResource SemiGrey2}" />
                                     </Style>
 
                                     <Style Selector="Border.Pointerover">
@@ -307,7 +311,8 @@
                                 Padding="10"
                                 BorderThickness="2"
                                 Foreground="{DynamicResource TextBlockDefaultForeground}"
-                                CornerRadius="12" Background="{DynamicResource SemiColorBackground3}">
+                                CornerRadius="12"
+                                Background="{DynamicResource SemiColorBackground2}">
 
                                 <Button.Styles>
                                     <Style Selector="Button">
@@ -315,7 +320,13 @@
                                         <Style
                                             Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                                             <Setter Property="Background"
-                                                    Value="{DynamicResource SemiColorBackground3}" />
+                                                    Value="{DynamicResource SemiColorBackground2}" />
+                                        </Style>
+
+                                        <Style
+                                            Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">
+                                            <Setter Property="Background"
+                                                    Value="{DynamicResource SemiColorBackground2}" />
                                         </Style>
 
                                     </Style>
@@ -381,7 +392,7 @@
                                             Command="{Binding $parent[UserControl].((pages:CategoryPageViewModel)DataContext).DropReleaseItemCommand}"
                                             PassEventArgsToCommand="True"
                                             InputConverter="{StaticResource ValueParameterTupleConverter}"
-                                            InputConverterParameter="{Binding}"/>
+                                            InputConverterParameter="{Binding}" />
                                     </DropEventTrigger>
                                 </Interaction.Behaviors>
 
@@ -425,12 +436,50 @@
 
         </ScrollViewer>
 
+
+        <ProgressBar
+            Grid.Row="2" Grid.Column="1" Height="100" Width="100"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="20,10"
+            IsIndeterminate="True"
+            BorderThickness="5"
+            IsVisible="{Binding IsLoading}"
+            Theme="{DynamicResource ProgressRing}" />
+
         <Button Grid.Row="2" Grid.Column="1" CornerRadius="8" VerticalAlignment="Top" HorizontalAlignment="Left"
                 Theme="{StaticResource OutlineButton}"
                 Margin="20,10"
-                
                 Command="{Binding AddNewReleaseItemCommand}"
-                IsVisible="{Binding !ReleaseItems.Count}" Content="新建">
+                Content="新建">
+
+            <Classes.DisplayOneself>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="!ReleaseItems.Count" />
+                    <Binding Path="!IsLoading" />
+                </MultiBinding>
+            </Classes.DisplayOneself>
+
+            <Button.Transitions>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3"
+                                                   Easing="QuadraticEaseIn" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="QuadraticEaseIn" />
+                </Transitions>
+            </Button.Transitions>
+
+            <Button.Styles>
+                <Style Selector="Button.DisplayOneself">
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="IsVisible" Value="True" />
+                </Style>
+
+                <Style Selector="Button">
+                    <Setter Property="Opacity" Value="0" />
+                    <Setter Property="IsVisible" Value="False" />
+                </Style>
+            </Button.Styles>
+
         </Button>
 
     </Grid>

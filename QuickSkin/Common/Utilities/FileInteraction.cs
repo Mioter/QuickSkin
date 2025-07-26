@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using Avalonia.Controls.Notifications;
 using QuickSkin.Common.Services;
 
 namespace QuickSkin.Common.Utilities;
@@ -49,7 +48,7 @@ public static class FileInteraction
         }
         else
         {
-            NotificationService.Show("出错了", "当前操作系统不支持此操作", NotificationType.Error);
+            NotificationService.Error("当前操作系统不支持此操作");
         }
     }
 }

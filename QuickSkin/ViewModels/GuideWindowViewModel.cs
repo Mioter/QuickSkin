@@ -1,7 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Collections;
-using Avalonia.Controls.Notifications;
 using CommunityToolkit.Mvvm.Input;
 using QuickSkin.Common;
 using QuickSkin.Common.Manager;
@@ -43,8 +42,7 @@ public partial class GuideWindowViewModel : ViewModelBase
             IsFullScreenButtonVisible = false,
         };
 
-        var windowBox = new WindowBox();
-        var workspaceInfo = await windowBox.ShowDialog<WorkspaceInfo>(new NewWorkspace(), new NewWorkspaceViewModel(), options, WindowManager.TopLevel);
+        var workspaceInfo = await WindowBox.ShowDialog<NewWorkspace, WorkspaceInfo>(new NewWorkspaceViewModel(), options, WindowManager.TopLevel);
 
         if (workspaceInfo == null)
             return;
@@ -52,12 +50,14 @@ public partial class GuideWindowViewModel : ViewModelBase
         using var repo = new WorkspaceInfoRepository(StaticConfig.DataBasePath);
         repo.Insert(workspaceInfo);
         Workspaces.Add(workspaceInfo);
+
+        NotificationService.Success($"创建工作区 {workspaceInfo.Name} 成功了");
     }
 
     [RelayCommand]
     private static void OpenWorkspace(WorkspaceInfo workspaceInfo)
     {
-        Workplace.WorkspaceInfo = workspaceInfo;
+        Workplace.CurrentWorkspace = workspaceInfo;
         WindowManager.OpenWorkspace();
     }
 
@@ -84,7 +84,7 @@ public partial class GuideWindowViewModel : ViewModelBase
 
         workspaceInfo.Name = result;
 
-        NotificationService.Show("好欸", $"修改{workspaceInfo.Name}的名称成功了", NotificationType.Success);
+        NotificationService.Success($"修改{workspaceInfo.Name}的名称成功了");
     }
 
     [RelayCommand]
@@ -112,13 +112,13 @@ public partial class GuideWindowViewModel : ViewModelBase
 
         workspaceInfo.InputPath = result;
 
-        NotificationService.Show("好欸", $"修改{workspaceInfo.Name}的输入目录成功了", NotificationType.Success);
+        NotificationService.Success($"修改{workspaceInfo.Name}的输入目录成功了");
     }
 
     [RelayCommand]
     private static async Task EditWorkspaceOutPutPath(WorkspaceInfo workspaceInfo)
     {
-        string path = workspaceInfo.InputPath ?? Path.Combine(StaticConfig.SourcePath, workspaceInfo.Name);
+        string path = workspaceInfo.OutputPath;
 
         var options = new OverlayDialogOptions
         {
@@ -128,10 +128,10 @@ public partial class GuideWindowViewModel : ViewModelBase
             CanDragMove = true,
         };
 
-        string? result = await OverlayDialog.ShowCustomModal<EditPath, EditPathViewModel, string>(new EditPathViewModel(path, options.Title, new IsAbsolutePathAttribute
+        string? result = await OverlayDialog.ShowCustomModal<EditPath, EditPathViewModel, string>(new EditPathViewModel(path, options.Title, new AbsolutePathAttribute
             {
                 ErrorMessage = "路径必须为绝对文件夹",
-            }, new ExistsDirectoryAttribute
+            }, new DirectoryExistsAttribute
             {
                 ErrorMessage = "输出路径必需是存在的文件夹",
             },
@@ -149,7 +149,7 @@ public partial class GuideWindowViewModel : ViewModelBase
         }
 
         workspaceInfo.OutputPath = result;
-        NotificationService.Show("好欸", $"修改{workspaceInfo.Name}的输出目录成功了", NotificationType.Success);
+        NotificationService.Success($"修改{workspaceInfo.Name}的输出目录成功了");
     }
 
     [RelayCommand]
@@ -170,9 +170,8 @@ public partial class GuideWindowViewModel : ViewModelBase
         if (bitmap == null)
             return;
 
-        var windowBox = new WindowBox();
         var model = new ImageCroppingViewModel(bitmap);
-        bool result = await windowBox.ShowDialog<ImageCropping, bool>(model, options, WindowManager.TopLevel);
+        bool result = await WindowBox.ShowDialog<ImageCropping, bool>(model, options, WindowManager.TopLevel);
 
         if (!result)
             return;
@@ -187,7 +186,7 @@ public partial class GuideWindowViewModel : ViewModelBase
             repo.Update(workspaceInfo.Id, [nameof(workspaceInfo.IconId)], [workspaceInfo.IconId]);
         }
 
-        NotificationService.Show("好欸", $"修改{workspaceInfo.Name}的图标成功了", NotificationType.Success);
+        NotificationService.Success($"修改{workspaceInfo.Name}的图标成功了");
     }
 
     [RelayCommand]
@@ -207,6 +206,6 @@ public partial class GuideWindowViewModel : ViewModelBase
         if (workspaceInfo.IconId != null)
             CacheManager.DeleteImage(workspaceInfo.IconId);
 
-        NotificationService.Show("好欸", $"删除{workspaceInfo.Name}成功了", NotificationType.Success);
+        NotificationService.Success($"删除{workspaceInfo.Name}成功了");
     }
 }

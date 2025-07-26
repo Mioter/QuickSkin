@@ -53,9 +53,8 @@ public partial class NewReleaseItemViewModel : DataVerifyModelBase, IDialogConte
         if (bitmap == null)
             return;
 
-        var windowBox = new WindowBox();
         var model = new ImageCroppingViewModel(bitmap);
-        bool result = await windowBox.ShowDialog<ImageCropping, bool>(model, options, WindowManager.TopLevel);
+        bool result = await WindowBox.ShowDialog<ImageCropping, bool>(model, options, WindowManager.TopLevel);
 
         if (!result)
             return;

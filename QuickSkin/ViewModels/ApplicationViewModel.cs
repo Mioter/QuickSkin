@@ -4,12 +4,15 @@ using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using QuickSkin.Common.Manager;
+using QuickSkin.Models.Configs;
 using Serilog;
 
 namespace QuickSkin.ViewModels;
 
 public partial class ApplicationViewModel : ObservableObject
 {
+    public UiConfig UiConfig { get; set; } = ConfigManager.ConfigModel.UiConfig;
+
     [RelayCommand]
     private static void ShowMainWindow()
     {

@@ -9,7 +9,5 @@ public static class Workplace
 
     public static string CurrentAssemblyName => CurrentAssembly.GetName().Name ?? "QuickSkin";
 
-    public static WorkspaceInfo? WorkspaceInfo { get; set; }
-
-    public static void SwitchWorkplace(string name) { }
+    public static WorkspaceInfo? CurrentWorkspace { get; set; }
 }

@@ -1,12 +1,16 @@
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using QuickSkin.Common;
 using QuickSkin.Common.Manager;
+using QuickSkin.Common.Services;
+using QuickSkin.Common.Services.Compressions;
 using QuickSkin.Common.Services.DataBases;
 using QuickSkin.Common.Utilities;
 using QuickSkin.Common.Wrappers;
@@ -20,6 +24,12 @@ namespace QuickSkin.ViewModels.Pages;
 
 public partial class CategoryPageViewModel : ViewModelBase
 {
+    private readonly CategoryItem _defaultCategory = new()
+    {
+        Id = "Item_Default",
+        Name = "未分类",
+    };
+
     public CategoryPageViewModel()
     {
         EnsureDefaultCategory();
@@ -27,46 +37,7 @@ public partial class CategoryPageViewModel : ViewModelBase
         CurrentCategoryItem = CategoryItems[0];
     }
 
-    private readonly CategoryItem _defaultCategory = new()
-    {
-        Id = "Item_Default",
-        Name = "未分类",
-    };
-
-    private void EnsureDefaultCategory()
-    {
-        using var repo = new CategoryMapRepository(StaticConfig.DataCategoryPath);
-        
-        if (!repo.Exists(_defaultCategory.Id))
-        {
-            repo.Insert(_defaultCategory);
-
-            // 创建category.db中的表
-            using (new ReleaseItemRepository(_defaultCategory.Id, StaticConfig.DataCategoryPath)) { }
-        }
-        else
-        {
-            // 更新分类信息
-            repo.Update(_defaultCategory);
-
-            // 确保category.db中有对应表
-            string? tableName = repo.GetIdByCategoryName(_defaultCategory.Name);
-
-            if (string.IsNullOrEmpty(tableName)) 
-                return;
-
-            // 若表不存在则创建
-            using (new ReleaseItemRepository(tableName, StaticConfig.DataCategoryPath)) { }
-        }
-    }
-
-    private void LoadCategoryItemsFromDb()
-    {
-        using var repo = new CategoryMapRepository(StaticConfig.DataCategoryPath);
-        var items = repo.GetAll();
-
-        CategoryItems.AddRange(items);
-    }
+    [ObservableProperty] public partial bool IsLoading { get; set; }
 
     public AvaloniaList<CategoryItem> CategoryItems { get; } = [];
 
@@ -85,8 +56,44 @@ public partial class CategoryPageViewModel : ViewModelBase
 
     public AvaloniaList<ReleaseItemModel> ReleaseItems { get; set; } = [];
 
+    private void EnsureDefaultCategory()
+    {
+        using var repo = new CategoryMapRepository(StaticConfig.DataCategoryPath);
+
+        if (!repo.Exists(_defaultCategory.Id))
+        {
+            repo.Insert(_defaultCategory);
+
+            // 创建category.db中的表
+            using (new ReleaseItemRepository(_defaultCategory.Id, StaticConfig.DataCategoryPath)) { }
+        }
+        else
+        {
+            // 更新分类信息
+            repo.Update(_defaultCategory);
+
+            // 确保category.db中有对应表
+            string? tableName = repo.GetIdByCategoryName(_defaultCategory.Name);
+
+            if (string.IsNullOrEmpty(tableName))
+                return;
+
+            // 若表不存在则创建
+            using (new ReleaseItemRepository(tableName, StaticConfig.DataCategoryPath)) { }
+        }
+    }
+
+    private void LoadCategoryItemsFromDb()
+    {
+        using var repo = new CategoryMapRepository(StaticConfig.DataCategoryPath);
+        var items = repo.GetAll();
+
+        CategoryItems.AddRange(items);
+    }
+
     private void LoadReleaseItems(CategoryItem value)
     {
+        IsLoading = true;
         using var repo = new CategoryMapRepository(StaticConfig.DataCategoryPath);
 
         // 获取表名
@@ -96,6 +103,8 @@ public partial class CategoryPageViewModel : ViewModelBase
 
         using var releaseItemRepository = new ReleaseItemRepository(tableName, StaticConfig.DataCategoryPath);
         var items = releaseItemRepository.GetAll();
+
+        IsLoading = false;
 
         // UI线程更新集合
         Dispatcher.UIThread.Post(() =>
@@ -192,6 +201,7 @@ public partial class CategoryPageViewModel : ViewModelBase
             return;
 
         var categoryItem = item ?? CurrentCategoryItem;
+        releaseItem.Category = categoryItem.Name;
 
         using (var repo = new CategoryMapRepository(StaticConfig.DataCategoryPath))
         {
@@ -248,7 +258,8 @@ public partial class CategoryPageViewModel : ViewModelBase
     [RelayCommand]
     public async Task DropReleaseItem(object tuple)
     {
-        if (tuple is not (DragEventArgs e, ReleaseItemModel model)) return;
+        if (Workplace.CurrentWorkspace == null || tuple is not (DragEventArgs e, ReleaseItemModel model))
+            return;
 
         var storageItems = e.Data.GetFiles();
 
@@ -266,15 +277,48 @@ public partial class CategoryPageViewModel : ViewModelBase
         };
 
         var allFilePaths = PathExtractor.GetAllFilePaths(storageItems);
-        var zipFiles = FileFilter.FilterByExtension(allFilePaths, ".zip", ".rar", ".7z");
+        string[] zipFiles = FileFilter.FilterByExtension(allFilePaths, ".zip", ".rar", ".7z").ToArray();
 
-        var windowBox = new WindowBox();
-        var vm = new ArchiveSelectorViewModel();
-        vm.AllFileItems.AddRange(zipFiles.Select(x => new SelectedItem(x)));
-        var selectedFileList = await windowBox.ShowDialog<ArchiveSelector, AvaloniaList<string>>(vm, options, WindowManager.TopLevel);
+        string outputPath = Path.Combine(
+            Workplace.CurrentWorkspace.OutputPath,
+            CurrentCategoryItem.Name,
+            model.Name);
 
-        if (selectedFileList != null)
+        string[]? selectedFileList;
+
+        if (zipFiles.Length > 1)
         {
+            var vm = new ArchiveSelectorViewModel(outputPath);
+            vm.AllFileItems.AddRange(zipFiles.Select(x => new SelectedItem<string>(x)));
+            selectedFileList = await WindowBox.ShowDialog<ArchiveSelector, string[]>(vm, options, WindowManager.TopLevel);
+
+            if (selectedFileList == null || selectedFileList.Length == 0)
+            {
+                return;
+            }
+        }
+        else
+        {
+            selectedFileList = zipFiles;
+        }
+
+        foreach (string archivePath in selectedFileList)
+        {
+            string fileName = Path.GetFileName(archivePath);
+            string itemOutputPath = Path.Combine(outputPath, Path.GetFileNameWithoutExtension(fileName));
+
+            if (Directory.Exists(itemOutputPath) && Directory.GetFiles(itemOutputPath).Length > 0)
+            {
+                NotificationService.Warning($"文件夹 {Path.GetFileName(itemOutputPath)} 已存在且不为空，跳过解压");
+            }
+            else if (!await CompressionService.ExtractAsync(archivePath, itemOutputPath))
+            {
+                NotificationService.Error($"文件 {fileName} 解压失败了！");
+            }
+            else
+            {
+                NotificationService.Success($"项目 {fileName} 添加成功了！");
+            }
         }
     }
 }

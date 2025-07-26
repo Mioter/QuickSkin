@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
 using QuickSkin.Common.Services;
 using Ursa.Controls;
 
@@ -15,7 +14,7 @@ public class InteractiveWindowBase : UrsaWindow
             Topmost = true;
             Topmost = false;
 
-            NotificationService.Show("看我", "窗口已经在显示了~", NotificationType.Information);
+            NotificationService.Info("看我", "窗口已经在显示了~");
 
             return;
         }

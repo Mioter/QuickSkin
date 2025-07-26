@@ -46,7 +46,7 @@ public partial class WorkWindow : InteractiveWindowBase
 
     private async Task HandleWindowClosingAsync()
     {
-        var behavior = ConfigManager.ConfigModel.ClosingBehavior;
+        var behavior = ConfigManager.ConfigModel.SystemConfig.ClosingBehavior;
 
         if (behavior == Core.Enums.ClosingBehavior.AskAbout)
         {
@@ -86,7 +86,7 @@ public partial class WorkWindow : InteractiveWindowBase
             return Core.Enums.ClosingBehavior.AskAbout;
 
         if (model.IsEnablePrompt)
-            ConfigManager.ConfigModel.ClosingBehavior = model.ClosingBehavior;
+            ConfigManager.ConfigModel.SystemConfig.ClosingBehavior = model.ClosingBehavior;
 
         return model.ClosingBehavior;
     }

@@ -8,11 +8,13 @@ using QuickSkin.Models;
 
 namespace QuickSkin.ViewModels.Dialogs;
 
-public partial class ArchiveSelectorViewModel : ObservableObject, IDialogContext
+public partial class ArchiveSelectorViewModel(string outputPath) : ObservableObject, IDialogContext
 {
-    public AvaloniaList<SelectedItem> SelectedFileItems { get; set; } = [];
-    
-    public AvaloniaList<SelectedItem> AllFileItems { get; set; } = [];
+    public string OutputPath { get; } = outputPath;
+
+    public AvaloniaList<SelectedItem<string>> SelectedFileItems { get; set; } = [];
+
+    public AvaloniaList<SelectedItem<string>> AllFileItems { get; set; } = [];
 
     public bool IsSelectAll
     {
@@ -20,7 +22,7 @@ public partial class ArchiveSelectorViewModel : ObservableObject, IDialogContext
         set
         {
             field = value;
-            
+
             if (value)
             {
                 // 将筛选结果添加到 SelectedFileItems
@@ -31,15 +33,14 @@ public partial class ArchiveSelectorViewModel : ObservableObject, IDialogContext
             {
                 SelectedFileItems.Clear();
             }
-            
+
             OnPropertyChanged();
         }
     }
 
     [RelayCommand]
-    private void SelectFile(SelectedItem item)
+    private void SelectFile(SelectedItem<string> item)
     {
-
         if (!SelectedFileItems.Remove(item))
         {
             SelectedFileItems.Add(item);
@@ -47,18 +48,17 @@ public partial class ArchiveSelectorViewModel : ObservableObject, IDialogContext
     }
 
     [RelayCommand]
-    private void DeleteFile(SelectedItem item)
+    private void DeleteFile(SelectedItem<string> item)
     {
         SelectedFileItems.Remove(item);
     }
-    
+
     #region 接口实现
 
     [RelayCommand]
     private void Ok()
     {
-        Close(SelectedFileItems.Where(item => item is { Content: string }) // 条件筛选
-            .Select(item => item.Content));
+        Close(SelectedFileItems.Select(x => x.Content).ToArray());
     }
 
     [RelayCommand]

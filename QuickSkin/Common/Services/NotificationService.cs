@@ -19,7 +19,13 @@ public static class NotificationService
             {
                 Margin = new Thickness(0, 40, 0, 0),
             };
-    
+
+    public static double CharactersPerMinute { get; set; } = 200.0;
+
+    public static double MinimumSeconds { get; set; } = 3.0; // 最小显示时间3秒
+
+    public static double MaximumSeconds { get; set; } = 15.0; // 最大显示时间15秒
+
     public static AvaloniaList<NotificationItem> Notifications { get; } = [];
 
     /// <summary>
@@ -34,17 +40,11 @@ public static class NotificationService
         if (customExpiration.HasValue)
             return customExpiration.Value;
 
-        // 根据消息长度计算阅读时间
-        // 假设平均阅读速度为每分钟200个字符
-        const double charactersPerMinute = 200.0;
-        const double minimumSeconds = 3.0; // 最小显示时间3秒
-        const double maximumSeconds = 15.0; // 最大显示时间15秒
-
         // 计算基于字符数的阅读时间（秒）
-        double readingTimeSeconds = message.Length / charactersPerMinute * 60.0;
+        double readingTimeSeconds = message.Length / CharactersPerMinute * 60.0;
 
         // 确保时间在合理范围内
-        readingTimeSeconds = Math.Max(minimumSeconds, Math.Min(maximumSeconds, readingTimeSeconds));
+        readingTimeSeconds = Math.Max(MinimumSeconds, Math.Min(MaximumSeconds, readingTimeSeconds));
 
         return TimeSpan.FromSeconds(readingTimeSeconds);
     }
@@ -73,6 +73,7 @@ public static class NotificationService
                 Type = type,
                 Time = DateTime.Now,
             };
+
             Notifications.Add(item);
 
             NotificationManager?.Show(
@@ -99,30 +100,56 @@ public static class NotificationService
         Action? onClose = null
         )
     {
-        Dispatcher.UIThread.Post(() =>
-        {
-            var calculatedExpiration = CalculateExpiration(message, expiration);
+        Show(
+            title,
+            message,
+            type,
+            expiration,
+            showIcon,
+            showClose,
+            onClick,
+            onClose,
+            ["Light"]
+        );
+    }
 
-            // 创建 NotificationItem 并添加到列表
-            var item = new NotificationItem
-            {
-                Title = title,
-                Message = message,
-                Type = type,
-                Time = DateTime.Now,
-            };
-            Notifications.Add(item);
+    public static void Success(string message, string[]? classes = null)
+    {
+        Show("好欸！", message, NotificationType.Success, classes: classes);
+    }
 
-            NotificationManager?.Show(
-                new Notification(title, message),
-                type,
-                calculatedExpiration,
-                showIcon,
-                showClose,
-                onClick,
-                onClose,
-                ["Light"]
-            );
-        });
+    public static void Error(string message, string[]? classes = null)
+    {
+        Show("坏欸！", message, NotificationType.Error, classes: classes);
+    }
+
+    public static void Info(string message, string[]? classes = null)
+    {
+        Show("提示！", message, NotificationType.Information, classes: classes);
+    }
+
+    public static void Warning(string message, string[]? classes = null)
+    {
+        Show("注意！", message, NotificationType.Warning, classes: classes);
+    }
+
+    public static void Success(string title, string message, string[]? classes = null)
+    {
+        Show(title, message, NotificationType.Success, classes: classes);
+    }
+
+    public static void Error(string title, string message, string[]? classes = null)
+    {
+        Show(title, message, NotificationType.Error, classes: classes);
+    }
+
+    public static void Info(string title, string message, string[]? classes = null)
+    {
+        Show(title, message, NotificationType.Information, classes: classes);
+    }
+
+    public static void Warning(string title, string message, string[]? classes = null)
+    {
+        Show(title, message, NotificationType.Warning, classes: classes);
     }
 }

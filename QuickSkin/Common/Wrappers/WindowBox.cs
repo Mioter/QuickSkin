@@ -6,14 +6,18 @@ using Ursa.Controls;
 
 namespace QuickSkin.Common.Wrappers;
 
-public class WindowBox
+public static class WindowBox
 {
-    private object? _result;
-    private UrsaWindow? _window;
-
-    public async Task<TResult?> ShowDialog<TResult>(object content, IDialogContext model, ShowWindowOptions options, UrsaWindow toolLevel)
+    public static async Task<TResult?> ShowDialog<TResult>(
+        object content,
+        IDialogContext model,
+        ShowWindowOptions options,
+        UrsaWindow toolLevel
+        )
     {
-        _window = new UrsaWindow
+        TResult? finalResult = default;
+
+        var window = new UrsaWindow
         {
             DataContext = model,
             Content = content,
@@ -32,20 +36,25 @@ public class WindowBox
         };
 
         model.RequestClose += WindowDateOnRequestClose;
-        await _window.ShowDialog(toolLevel);
+        await window.ShowDialog(toolLevel);
         model.RequestClose -= WindowDateOnRequestClose;
 
-        return _result is TResult result ? result : default;
+        return finalResult;
+
+        void WindowDateOnRequestClose(object? sender, object? e)
+        {
+            finalResult = e is TResult result ? result : default;
+            window.Close();
+        }
     }
 
-    public Task<TResult?> ShowDialog<TControl, TResult>(IDialogContext model, ShowWindowOptions options, UrsaWindow toolLevel) where TControl : Control, new()
+    public static Task<TResult?> ShowDialog<TControl, TResult>(
+        IDialogContext model,
+        ShowWindowOptions options,
+        UrsaWindow toolLevel
+        )
+        where TControl : Control, new()
     {
         return ShowDialog<TResult>(new TControl(), model, options, toolLevel);
-    }
-
-    private void WindowDateOnRequestClose(object? sender, object? e)
-    {
-        _result = e;
-        _window?.Close();
     }
 }

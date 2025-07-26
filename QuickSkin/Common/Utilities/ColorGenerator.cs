@@ -4,14 +4,14 @@ using Avalonia.Media;
 namespace QuickSkin.Common.Utilities;
 
 public static class ColorGenerator
-{    
+{
     private static readonly Random _random = new();
-    
+
     /// <summary>
-    /// 每次加载时获得随机颜色
+    ///     每次加载时获得随机颜色
     /// </summary>
     public static IBrush RandomColor => GeneratePastelColor();
-    
+
     public static SolidColorBrush GeneratePastelColor()
     {
         // 生成明亮的色相（0-360度）

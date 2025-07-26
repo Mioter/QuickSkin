@@ -18,13 +18,13 @@
         <viewModels:GuideWindowViewModel />
     </u:UrsaWindow.DataContext>
 
-    <Grid RowDefinitions="40,Auto,*" ColumnDefinitions="1*,2*" RowSpacing="10" Margin="10,0">
+    <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="1*,2*" RowSpacing="10" Margin="10,0">
 
         <TextBlock Text="打开工作区"
                    FontWeight="Bold"
                    Grid.ColumnSpan="2"
                    VerticalAlignment="Center"
-                   Margin="10,0" />
+                   Margin="10" />
 
         <StackPanel Margin="40,30" Spacing="10" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
 

@@ -116,16 +116,15 @@ public partial class NewWorkspaceViewModel : DataVerifyModelBase, IDialogContext
         if (bitmap == null)
             return;
 
-        var windowBox = new WindowBox();
         var model = new ImageCroppingViewModel(bitmap);
-        bool result = await windowBox.ShowDialog<ImageCropping, bool>(model, options, WindowManager.TopLevel);
+        bool result = await WindowBox.ShowDialog<ImageCropping, bool>(model, options, WindowManager.TopLevel);
 
         if (!result)
             return;
 
         Icon = model.CroppedImage;
     }
-    
+
     [RelayCommand]
     private void Cancel()
     {
@@ -191,7 +190,7 @@ public partial class NewWorkspaceViewModel : DataVerifyModelBase, IDialogContext
             return;
         }
 
-        var isAbsolutePathAttribute = new IsAbsolutePathAttribute();
+        var isAbsolutePathAttribute = new AbsolutePathAttribute();
 
         if (!isAbsolutePathAttribute.IsValid(value))
         {
@@ -201,7 +200,7 @@ public partial class NewWorkspaceViewModel : DataVerifyModelBase, IDialogContext
             return;
         }
 
-        var existsDirectoryAttribute = new ExistsDirectoryAttribute();
+        var existsDirectoryAttribute = new DirectoryExistsAttribute();
 
         if (!existsDirectoryAttribute.IsValid(value))
         {
@@ -223,7 +222,7 @@ public partial class NewWorkspaceViewModel : DataVerifyModelBase, IDialogContext
             return;
         }
 
-        var isAbsolutePathAttribute = new IsAbsolutePathAttribute();
+        var isAbsolutePathAttribute = new AbsolutePathAttribute();
 
         if (!isAbsolutePathAttribute.IsValid(value))
         {
@@ -233,7 +232,7 @@ public partial class NewWorkspaceViewModel : DataVerifyModelBase, IDialogContext
             return;
         }
 
-        var existsDirectoryAttribute = new ExistsDirectoryAttribute();
+        var existsDirectoryAttribute = new DirectoryExistsAttribute();
 
         if (!existsDirectoryAttribute.IsValid(value))
         {

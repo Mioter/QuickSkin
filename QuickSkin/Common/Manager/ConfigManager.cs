@@ -1,13 +1,13 @@
 using System.Text.Json.Serialization;
 using QuickSkin.Common.Services;
-using QuickSkin.Models;
+using QuickSkin.Models.Configs;
 
 namespace QuickSkin.Common.Manager;
 
 public static class ConfigManager
 {
     private static readonly JsonConfigService<ConfigModel> _service = new(
-        nameof(ConfigManager).ToLower(),
+        nameof(ConfigModel).ToLower(),
         ConfigModelJsonContext.Default
     );
 

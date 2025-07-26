@@ -27,10 +27,12 @@ public class ReleaseItemRepository : IDatabaseRepository<ReleaseItemModel>
     public int Count()
     {
         var rows = _db.Query($"SELECT COUNT(*) as cnt FROM {TableName}");
+
         if (rows.Count > 0 && rows[0]["cnt"] != null)
         {
             return Convert.ToInt32(rows[0]["cnt"]);
         }
+
         return 0;
     }
 
@@ -66,10 +68,12 @@ public class ReleaseItemRepository : IDatabaseRepository<ReleaseItemModel>
             throw new ArgumentException("字段与数值数量不一致，或id为空");
 
         var data = new Dictionary<string, object?>();
+
         for (int i = 0; i < fields.Length; i++)
         {
             data[fields[i]] = values[i];
         }
+
         _db.Update(
             TableName,
             data,
@@ -88,9 +92,12 @@ public class ReleaseItemRepository : IDatabaseRepository<ReleaseItemModel>
             {
                 [nameof(ReleaseItemModel.Name)] = id,
             });
+
         if (rows.Count == 0)
             return null;
+
         var row = rows[0];
+
         return new ReleaseItemModel
         {
             Name = row[nameof(ReleaseItemModel.Name)]?.ToString() ?? throw new InvalidOperationException(),
@@ -98,7 +105,7 @@ public class ReleaseItemRepository : IDatabaseRepository<ReleaseItemModel>
             IconId = row[nameof(ReleaseItemModel.IconId)]?.ToString(),
         };
     }
-    
+
     public IEnumerable<ReleaseItemModel> GetAll()
     {
         var rows = _db.Query($"SELECT * FROM {TableName}");

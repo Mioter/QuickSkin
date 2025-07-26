@@ -14,12 +14,15 @@ using QuickSkin.Views.Dialogs;
 
 namespace QuickSkin.ViewModels.Dialogs;
 
-public partial class NewCategoryItemViewModel: DataVerifyModelBase, IDialogContext
+public partial class NewCategoryItemViewModel : DataVerifyModelBase, IDialogContext
 {
-    public NewCategoryItemViewModel() => InitialValidate();
-       
     private string? _iconKey;
-         
+
+    public NewCategoryItemViewModel()
+    {
+        InitialValidate();
+    }
+
     public string Name
     {
         get;
@@ -31,12 +34,10 @@ public partial class NewCategoryItemViewModel: DataVerifyModelBase, IDialogConte
     } = "";
 
     public string? Description { get; set; }
-    
-    [ObservableProperty]
-    public partial Geometry? Icon { get; set; }
 
-    [ObservableProperty]
-    public partial SolidColorBrush? IconBrush { get; set; }
+    [ObservableProperty] public partial Geometry? Icon { get; set; }
+
+    [ObservableProperty] public partial SolidColorBrush? IconBrush { get; set; }
 
     [RelayCommand]
     private async Task SetIcon()
@@ -50,15 +51,14 @@ public partial class NewCategoryItemViewModel: DataVerifyModelBase, IDialogConte
             IsRestoreButtonVisible = false,
             IsFullScreenButtonVisible = false,
         };
-        
-        var windowBox = new WindowBox();
-        var model = new IconSelectorViewModel();
-        _ = Dispatcher.UIThread.InvokeAsync(() => { model.InitializeResources(); });
-        bool result = await windowBox.ShowDialog<IconSelector, bool>(model,options, WindowManager.TopLevel);
 
-        if(!result || model.SelectedIconItem == null) 
+        var model = new IconSelectorViewModel();
+        _ = Dispatcher.UIThread.InvokeAsync(() => { model.InitializeResources(_iconKey); });
+        bool result = await WindowBox.ShowDialog<IconSelector, bool>(model, options, WindowManager.TopLevel);
+
+        if (!result || model.SelectedIconItem == null)
             return;
-        
+
         Icon = model.SelectedIconItem.Geometry;
         _iconKey = model.SelectedIconItem.ResourceKey;
         IconBrush = model.SelectedIconBrush;
@@ -76,7 +76,7 @@ public partial class NewCategoryItemViewModel: DataVerifyModelBase, IDialogConte
             IconKey = _iconKey,
         };
     }
-    
+
     #region 接口实现
 
     [RelayCommand]

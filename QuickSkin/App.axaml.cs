@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using QuickSkin.Common;
 using QuickSkin.Common.Manager;
 using QuickSkin.ViewModels;
 using Serilog;
@@ -17,6 +18,7 @@ public class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        AppResources.Default.Initialize();
         DataContext = new ApplicationViewModel();
     }
 

@@ -13,7 +13,7 @@ public partial class WorkspaceInfo : ObservableObject
 {
     private LoadingState _loadingState;
 
-    public required string Id {get; set;}
+    public required string Id { get; set; }
 
     [ObservableProperty] public required partial string Name { get; set; }
 

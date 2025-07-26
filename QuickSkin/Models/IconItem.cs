@@ -8,4 +8,3 @@ public class IconItem
 
     public required Geometry Geometry { get; set; }
 }
-

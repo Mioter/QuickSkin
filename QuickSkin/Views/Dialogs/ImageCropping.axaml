@@ -5,12 +5,12 @@
              x:DataType="userControls:ImageCroppingViewModel"
              x:Class="QuickSkin.Views.Dialogs.ImageCropping">
 
-    <Grid RowDefinitions="40,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
 
         <TextBlock Text="图片裁剪"
                    FontWeight="Bold"
                    VerticalAlignment="Center"
-                   Margin="20,0" />
+                   Margin="20,10" />
 
         <StackPanel Grid.Row="1" Orientation="Horizontal"
                     Margin="20,10,20,20"

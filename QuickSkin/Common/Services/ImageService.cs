@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Controls.Notifications;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using QuickSkin.Common.Manager;
@@ -111,7 +110,7 @@ public static class ImageService
         }
         catch (Exception ex)
         {
-            NotificationService.Show("坏欸", $"打开文件失败了！\n{ex.Message}", NotificationType.Error);
+            NotificationService.Error($"打开文件失败了！\n{ex.Message}");
 
             return null;
         }

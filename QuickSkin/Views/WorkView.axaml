@@ -19,13 +19,13 @@
         <viewModels:WorkViewModel />
     </UserControl.DataContext>
 
-    <Grid RowDefinitions="40,*" ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="10,0">
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="10,0">
 
         <!-- 标题文本 -->
         <TextBlock
             FontWeight="Bold"
             Grid.ColumnSpan="2"
-            Margin="10,0"
+            Margin="10"
             HorizontalAlignment="Left"
             IsHitTestVisible="False"
             Text="{Binding $parent[Window].Title}"
@@ -103,6 +103,13 @@
                 </ToggleButton.Styles>
 
                 <PathIcon Data="{StaticResource SemiIconChevronRight}" Height="10" Width="10" />
+                
+                <ToolTip.Tip>
+                    <Panel>
+                        <TextBlock IsVisible="{Binding !$parent[ToggleButton].IsChecked}" Text="展开导航栏"/>
+                        <TextBlock IsVisible="{Binding $parent[ToggleButton].IsChecked}" Text="收起导航栏"/>
+                    </Panel>
+                </ToolTip.Tip>
 
             </ToggleButton>
 
@@ -155,18 +162,31 @@
 
                     <Style Selector="u|SelectionList > StackPanel > TextBlock">
                         <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="Transitions">
+                            <Transitions>
+                                <DoubleTransition
+                                    Duration="0:0:0.5"
+                                    Easing="CircularEaseOut"
+                                    Property="Opacity" />
+                            </Transitions>
+                        </Setter>
+                    </Style>
+
+                    <Style Selector="TextBlock.NotTransparent">
+                        <Setter Property="Opacity" Value="1" />
                     </Style>
 
                 </u:SelectionList.Styles>
 
-                <StackPanel Orientation="Horizontal" Spacing="10">
+                <StackPanel>
                     <PathIcon Data="{StaticResource SemiIconBox}" />
-                    <TextBlock Text="管理" />
+                    <TextBlock Text="管理" Classes.NotTransparent="{Binding IsNavigationExpand}" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Spacing="10">
+                <StackPanel>
                     <PathIcon Data="{StaticResource SemiIconSetting}" />
-                    <TextBlock Text="设置" />
+                    <TextBlock Text="设置" Classes.NotTransparent="{Binding IsNavigationExpand}" />
                 </StackPanel>
 
             </u:SelectionList>

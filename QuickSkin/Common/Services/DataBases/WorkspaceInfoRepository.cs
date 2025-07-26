@@ -9,7 +9,7 @@ namespace QuickSkin.Common.Services.DataBases;
 
 public class WorkspaceInfoRepository : IDatabaseRepository<WorkspaceInfo>
 {
-    private const string TABLE_NAME  = "WorkspaceInfos";
+    private const string TABLE_NAME = "WorkspaceInfos";
 
     private readonly DatabaseService _db;
 

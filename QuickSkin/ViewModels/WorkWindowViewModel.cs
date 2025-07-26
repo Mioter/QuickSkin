@@ -12,9 +12,8 @@ namespace QuickSkin.ViewModels;
 public partial class WorkWindowViewModel : ViewModelBase
 {
     public string Title { get; } =
-        $"{Workplace.CurrentAssemblyName} • {Workplace.WorkspaceInfo?.Name ?? "未选择工作区"}";
-    
-    
+        $"{Workplace.CurrentAssemblyName} • {Workplace.CurrentWorkspace?.Name ?? "未选择工作区"}";
+
     [RelayCommand]
     private static void CloseWorkspace()
     {
@@ -22,7 +21,7 @@ public partial class WorkWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ShowNotificationList()
+    private static void ShowNotificationList()
     {
         var options = new DrawerOptions
         {

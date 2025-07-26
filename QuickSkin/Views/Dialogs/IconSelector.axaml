@@ -4,33 +4,67 @@
              xmlns:models="clr-namespace:QuickSkin.Models"
              xmlns:dialogs="clr-namespace:QuickSkin.ViewModels.Dialogs"
              x:DataType="dialogs:IconSelectorViewModel"
+             xmlns:ava-Conver="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls.ColorPicker"
+             xmlns:ava-Primitives-Conver="clr-namespace:Avalonia.Controls.Primitives.Converters;assembly=Avalonia.Controls.ColorPicker"
              x:Class="QuickSkin.Views.Dialogs.IconSelector">
+    
+    <UserControl.Resources>
 
-    <Grid RowDefinitions="40,Auto,*,Auto">
+        <ava-Primitives-Conver:ContrastBrushConverter x:Key="ContrastBrushConverter" />
+
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
 
         <TextBlock Text="图标选择"
                    FontWeight="Bold"
                    VerticalAlignment="Center"
-                   Margin="20,0" />
+                   Margin="20,10" />
 
         <Panel Grid.Row="1" Margin="20,10,20,20">
 
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Spacing="20">
-                
+
                 <u:IconButton
                     Icon="{StaticResource SemiIconPlus}"
                     Theme="{DynamicResource BorderlessIconButton}" />
 
-                <TextBox CornerRadius="12" MinWidth="120" Watermark="搜索图标" Text="{Binding SearchText}" />
-                
+                <TextBox CornerRadius="12" MinWidth="120" 
+                         Watermark="搜索图标" 
+                         Text="{Binding SearchText}">
+                    <!--<TextBox.Styles>
+                        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+                            <Setter Property="VerticalAlignment" Value="Bottom"/>
+                        </Style>
+                    </TextBox.Styles>-->
+                </TextBox>
+
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Right">
+                
                 <Button
-                    Background="{Binding SelectedIconColor,Converter={StaticResource ToBrushConverter}}"
+                    Background="{Binding SelectedIconBrush}"
                     BorderBrush="{Binding $self.Foreground}"
                     Foreground="{Binding $self.Background, Converter={StaticResource ContrastBrushConverter}}"
                     Content="颜色">
+
+                    <Button.Styles>
+
+                        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="BorderBrush" Value="{Binding $parent[Button].BorderBrush}" />
+                            <Setter Property="Background"
+                                    Value="{Binding $parent[Button].Background,Converter={StaticResource SolidColorBrushToTransparentConverter},ConverterParameter='0.5'}" />
+                        </Style>
+
+                        <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="BorderBrush" Value="{Binding $parent[Button].BorderBrush}" />
+                            <Setter Property="Background"
+                                    Value="{Binding $parent[Button].Background,Converter={StaticResource SolidColorBrushToTransparentConverter},ConverterParameter='0.2'}" />
+                        </Style>
+                        
+                    </Button.Styles>
+
                     <Button.Effect>
                         <DropShadowEffect
                             BlurRadius="8"
@@ -40,7 +74,7 @@
                     </Button.Effect>
                     <Button.Flyout>
                         <Flyout Placement="Top">
-                            <ColorView Color="{Binding SelectedIconColor}" ColorSpectrumShape="Ring"/>
+                            <ColorView Color="{Binding SelectedIconColor}" ColorSpectrumShape="Ring" />
                         </Flyout>
                     </Button.Flyout>
                 </Button>

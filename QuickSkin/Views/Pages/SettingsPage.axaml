@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:QuickSkin.ViewModels.Pages"
              xmlns:u="https://irihi.tech/ursa"
+             FontSize=""
              xmlns:anchorControl="clr-namespace:QuickSkin.UI.Controls.AnchorControl"
              x:DataType="pages:SettingsPageViewModel"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -14,7 +15,7 @@
     </UserControl.DataContext>
 
     <Grid ColumnDefinitions="Auto,*">
-        
+
         <u:SelectionList Grid.Column="0" Name="NavigationList" SelectedIndex="0">
 
             <u:SelectionList.Indicator>
@@ -44,34 +45,111 @@
 
             </u:SelectionList.Styles>
 
+            <TextBlock Text="界面" />
+            <TextBlock Text="工具" />
             <TextBlock Text="系统" />
-            
+
         </u:SelectionList>
 
         <anchorControl:Anchor Grid.Column="1" IndexSource="{Binding ElementName=NavigationList}">
-            
-            <anchorControl:Anchor.DataTemplates>
-                
+
+            <anchorControl:Anchor.Styles>
+
+                <Style Selector="StackPanel">
+                    <Setter Property="Spacing" Value="10" />
+                </Style>
+
+            </anchorControl:Anchor.Styles>
+
+            <anchorControl:Anchor.HeaderTemplate>
+
                 <DataTemplate DataType="x:String">
-                    <TextBlock FontSize="16" Text="{Binding}" FontWeight="Bold"/>
+                    <Panel>
+                        <TextBlock FontSize="16" Text="{Binding}" FontWeight="Bold" VerticalAlignment="Center" />
+                        <Separator VerticalAlignment="Bottom" Margin="0" />
+                    </Panel>
                 </DataTemplate>
 
-            </anchorControl:Anchor.DataTemplates>
-            
+            </anchorControl:Anchor.HeaderTemplate>
+
+            <anchorControl:AnchorItem Header="界面">
+                <StackPanel >
+                    <Panel>
+                        <TextBlock Text="主题模式" VerticalAlignment="Center" />
+                        <ComboBox
+                            Classes="Bordered"
+                            HorizontalAlignment="Right"
+                            ItemsSource="{Binding Themes}"
+                            DisplayMemberBinding="{Binding Value}"
+                            SelectedValueBinding="{Binding Key}"
+                            SelectedValue="{Binding Config.UiConfig.Theme}" />
+                    </Panel>
+                    <Panel>
+                        <TextBlock Text="字体" VerticalAlignment="Center" />
+                        <ComboBox
+                            Classes="Bordered"
+                            HorizontalAlignment="Right"
+                            ItemsSource="{Binding AppResources.Fonts}"
+                            SelectedValueBinding="{Binding Key}"
+                            SelectedValue="{Binding AppResources.CurrentFont}">
+
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Key}"
+                                               FontFamily="{Binding Value}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Panel>
+                </StackPanel>
+            </anchorControl:AnchorItem>
+
+            <anchorControl:AnchorItem Header="工具">
+                <StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox
+                            IsEnabled="{Binding Use7ZipPathErrorText,Converter={x:Static ObjectConverters.IsNull}}"
+                            Content="使用 7zip 压缩" IsChecked="{Binding Config.ToolsConfig.Use7ZipCompression}" />
+                        <TextBlock Foreground="{DynamicResource SemiOrange5}"
+                                   Text="{Binding Use7ZipPathErrorText}" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="10">
+
+                        <TextBox Text="{Binding Use7ZipPath}"
+                                 Classes="Bordered"
+                                 Watermark="7zip所在文件夹路径" />
+
+                        <u:IconButton Grid.Column="1" Icon="{StaticResource SemiIconFolderOpen}"
+                                      HorizontalAlignment="Right"
+                                      Command="{Binding SelectedUse7ZipDllPathCommand}"
+                                      Theme="{DynamicResource OutlineIconButton}"
+                                      ToolTip.Tip="从文件中选择目录"
+                                      VerticalAlignment="Top" />
+                    </Grid>
+
+                </StackPanel>
+            </anchorControl:AnchorItem>
+
             <anchorControl:AnchorItem Header="系统">
-                <StackPanel u:Anchor.Id="s1" Spacing="10">
+                <StackPanel>
                     <Panel>
                         <TextBlock Text="在窗口关闭时" VerticalAlignment="Center" />
                         <ComboBox
+                            Classes="Bordered"
                             HorizontalAlignment="Right"
                             ItemsSource="{Binding ClosingBehaviors}"
                             DisplayMemberBinding="{Binding Value}"
                             SelectedValueBinding="{Binding Key}"
-                            SelectedValue="{Binding Config.ClosingBehavior}" />
+                            SelectedValue="{Binding Config.SystemConfig.ClosingBehavior}" />
                     </Panel>
                 </StackPanel>
             </anchorControl:AnchorItem>
+
         </anchorControl:Anchor>
+
     </Grid>
 
 </UserControl>

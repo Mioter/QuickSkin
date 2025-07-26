@@ -15,13 +15,13 @@
         <dialogs:NewWorkspaceViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="40,*,Auto" ColumnDefinitions="Auto,*" ColumnSpan="10">
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="Auto,*">
 
         <TextBlock Text="新建工作区"
                    FontWeight="Bold"
                    Grid.ColumnSpan="2"
                    VerticalAlignment="Center"
-                   Margin="20,0" />
+                   Margin="20,10" />
 
         <u:SelectionList Grid.Row="1" Grid.Column="0" Name="NavigationList" SelectedIndex="0" Margin="10,0">
 
@@ -53,9 +53,8 @@
             </u:SelectionList.Styles>
 
             <TextBlock Text="基础" />
-            
+
             <TextBlock Text="图标" />
-            
 
         </u:SelectionList>
 
@@ -76,7 +75,7 @@
 
                 <StackPanel Spacing="10">
                     <TextBlock Text="名称" />
-                    <TextBox Text="{Binding Name}" />
+                    <TextBox Classes="Bordered" Text="{Binding Name}" />
 
                     <Panel>
                         <TextBlock Text="工作模式" VerticalAlignment="Center">
@@ -98,6 +97,7 @@
                             </ToolTip.Tip>
                         </TextBlock>
                         <ComboBox
+                            Classes="Bordered"
                             HorizontalAlignment="Right"
                             ItemsSource="{Binding WorkingModes}"
                             DisplayMemberBinding="{Binding Value}"
@@ -112,7 +112,8 @@
                                                Converter={StaticResource StringCompareConverter},
                                     ConverterParameter={x:Static enums:WorkingMode.ReleaseFromSource}}" />
 
-                                    <TextBlock IsVisible="{Binding WorkingMode,
+                                    <TextBlock
+                                        IsVisible="{Binding WorkingMode,
                                                Converter={StaticResource StringCompareConverter},
                                                ConverterParameter={x:Static enums:WorkingMode.EnableDisabledMode}}">
                                         文件被放置在输出目录，通过更改文件夹名称或其他标识使文件对其他使用者识别为禁用状态。<LineBreak />
@@ -128,7 +129,7 @@
 
                     <StackPanel
                         Spacing="10"
-                        IsVisible="{Binding WorkingMode,Converter={StaticResource StringCompareConverter},ConverterParameter='{x:Static enums:WorkingMode.ReleaseFromSource}'}">
+                        IsEnabled="{Binding WorkingMode,Converter={StaticResource StringCompareConverter},ConverterParameter='{x:Static enums:WorkingMode.ReleaseFromSource}'}">
                         <TextBlock Text="输入路径">
                             <ToolTip.Tip>
 
@@ -144,9 +145,10 @@
                             </ToolTip.Tip>
                         </TextBlock>
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                            <TextBox Text="{Binding InputPath}" />
+                            <TextBox Classes="Bordered" Text="{Binding InputPath}" />
                             <u:IconButton Grid.Column="1" Icon="{StaticResource SemiIconFolderOpen}"
                                           HorizontalAlignment="Right"
+                                          Theme="{DynamicResource OutlineIconButton}"
                                           ToolTip.Tip="从文件中选择目录"
                                           VerticalAlignment="Top"
                                           Command="{Binding SelectedInputPathCommand}" />
@@ -156,10 +158,11 @@
 
                     <TextBlock Text="输出路径" ToolTip.Tip="输出路径为目标文件存放的目录" />
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                        <TextBox Text="{Binding OutputPath}" />
+                        <TextBox Classes="Bordered" Text="{Binding OutputPath}" />
                         <u:IconButton Grid.Column="1" Icon="{StaticResource SemiIconFolderOpen}"
                                       HorizontalAlignment="Right"
                                       VerticalAlignment="Top"
+                                      Theme="{DynamicResource OutlineIconButton}"
                                       ToolTip.Tip="从文件中选择目录"
                                       Command="{Binding SelectedOutputPathCommand}" />
                     </Grid>
@@ -202,7 +205,7 @@
 
                     </Button>
                 </StackPanel>
-                
+
             </Carousel>
 
         </ScrollViewer>

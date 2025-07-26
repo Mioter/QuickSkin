@@ -6,6 +6,7 @@ using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -19,7 +20,7 @@ public class Anchor : ItemsControl
 
     public static readonly StyledProperty<bool> AnimatedScrollProperty =
         AvaloniaProperty.Register<Anchor, bool>(nameof(AnimatedScroll), true);
-    
+
     public static readonly StyledProperty<TimeSpan> ScrollDurationProperty =
         AvaloniaProperty.Register<Anchor, TimeSpan>(nameof(ScrollDuration), TimeSpan.FromMilliseconds(300));
 
@@ -29,9 +30,16 @@ public class Anchor : ItemsControl
     public static readonly StyledProperty<object?> StickyHeaderProperty =
         AvaloniaProperty.Register<Anchor, object?>(nameof(StickyHeader));
 
-    public static readonly StyledProperty<double> HeaderHeightProperty =
-        AvaloniaProperty.Register<Anchor, double>(nameof(HeaderHeight), 40d);
+    public static readonly StyledProperty<double> HeaderHeightProperty = AnchorItem.HeaderHeightProperty.AddOwner<Anchor>();
 
+    public static readonly StyledProperty<IDataTemplate?> HeaderTemplateProperty = AnchorItem.HeaderTemplateProperty.AddOwner<Anchor>();
+
+    private bool _disableSync;
+    private bool _isSyncing;
+    private CancellationTokenSource? _scrollCts;
+
+    private ScrollViewer? _scrollViewer;
+    private Control? _stickyHeader;
 
     public SelectingItemsControl? IndexSource
     {
@@ -44,7 +52,7 @@ public class Anchor : ItemsControl
         get => GetValue(AnimatedScrollProperty);
         set => SetValue(AnimatedScrollProperty, value);
     }
-    
+
     public TimeSpan ScrollDuration
     {
         get => GetValue(ScrollDurationProperty);
@@ -56,7 +64,7 @@ public class Anchor : ItemsControl
         get => GetValue(ScrollEasingProperty);
         set => SetValue(ScrollEasingProperty, value);
     }
-    
+
     public object? StickyHeader
     {
         get => GetValue(StickyHeaderProperty);
@@ -69,12 +77,11 @@ public class Anchor : ItemsControl
         set => SetValue(HeaderHeightProperty, value);
     }
 
-
-    private ScrollViewer? _scrollViewer;
-    private Control? _stickyHeader;
-    private bool _isSyncing;
-    private bool _disableSync;
-    private CancellationTokenSource? _scrollCts;
+    public IDataTemplate? HeaderTemplate
+    {
+        get => GetValue(HeaderTemplateProperty);
+        set => SetValue(HeaderTemplateProperty, value);
+    }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -84,9 +91,13 @@ public class Anchor : ItemsControl
         _stickyHeader = e.NameScope.Find<Control>("PART_StickyHeader");
 
         if (_scrollViewer != null)
+        {
             _scrollViewer.ScrollChanged += OnScrollChanged;
+            _scrollViewer.SizeChanged += OnScrollViewerSizeChanged;
+        }
 
         UpdateStickyHeader();
+        UpdateLastItemMinHeight();
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -113,11 +124,11 @@ public class Anchor : ItemsControl
     }
 
     private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
-    {     
+    {
         UpdateStickyHeader();
-        
+
         if (_isSyncing || _disableSync) return;
-        
+
         SyncListBoxSelection();
     }
 
@@ -126,6 +137,7 @@ public class Anchor : ItemsControl
         if (_isSyncing) return;
 
         int? selectedIndex = IndexSource?.SelectedIndex;
+
         if (selectedIndex is not ({ } idx and >= 0) || idx >= Items.Count) return;
 
         _isSyncing = true;
@@ -142,7 +154,7 @@ public class Anchor : ItemsControl
     }
 
     /// <summary>
-    /// 查找当前应该吸附的锚点索引
+    ///     查找当前应该吸附的锚点索引
     /// </summary>
     private int FindStickyIndex()
     {
@@ -156,12 +168,13 @@ public class Anchor : ItemsControl
             if (Items[i] is not AnchorItem item) continue;
 
             var point = item.TranslatePoint(new Point(0, 0), _scrollViewer);
+
             if (!point.HasValue) continue;
 
             double distance = Math.Abs(point.Value.Y);
-            
+
             // 找到距离顶部最近且不超过顶部的项目
-            if (!(point.Value.Y <= 0) || !(distance < minDistance)) 
+            if (!(point.Value.Y <= 0) || !(distance < minDistance))
                 continue;
 
             minDistance = distance;
@@ -176,7 +189,7 @@ public class Anchor : ItemsControl
         if (_scrollViewer == null || _stickyHeader == null) return;
 
         int stickyIndex = FindStickyIndex();
-        
+
         // 更新粘性头部内容
         if (stickyIndex < Items.Count && Items[stickyIndex] is AnchorItem stickyItem)
         {
@@ -233,10 +246,11 @@ public class Anchor : ItemsControl
         if (IndexSource == null) return;
 
         int stickyIndex = FindStickyIndex();
-        
+
         if (IndexSource.SelectedIndex == stickyIndex) return;
 
         _isSyncing = true;
+
         try
         {
             IndexSource.SelectedIndex = stickyIndex;
@@ -272,7 +286,7 @@ public class Anchor : ItemsControl
 
                 return;
             }
-            
+
             if (AnimatedScroll)
             {
                 await AnimateScrollAsync(scrollViewer, to);
@@ -330,9 +344,48 @@ public class Anchor : ItemsControl
         }
     }
 
+    private void OnScrollViewerSizeChanged(object? sender, SizeChangedEventArgs sizeChangedEventArgs)
+    {
+        if (sizeChangedEventArgs.HeightChanged)
+        {
+            UpdateLastItemMinHeight();
+        }
+    }
+
+    private void UpdateLastItemMinHeight()
+    {
+        if (_scrollViewer == null || Items.Count == 0) return;
+
+        // 获取最后一个 AnchorItem
+        if (Items[^1] is not AnchorItem lastItem)
+            return;
+
+        // 计算可见区域高度
+        double viewportHeight = _scrollViewer.Viewport.Height;
+
+        /*
+        // 获取最后一个项目相对于滚动视图的位置
+        var point = lastItem.TranslatePoint(new Point(0, 0), _scrollViewer);
+        if (!point.HasValue) return;
+
+        // 计算最后一个项目到视口底部的距离
+        double remainingHeight = Math.Max(0, viewportHeight - point.Value.Y);
+        */
+
+        // 设置最小高度
+        lastItem.MinHeight = Math.Max(viewportHeight, lastItem.HeaderHeight);
+    }
+
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
+
+        if (_scrollViewer != null)
+        {
+            _scrollViewer.ScrollChanged -= OnScrollChanged;
+            _scrollViewer.SizeChanged -= OnScrollViewerSizeChanged;
+        }
+
         _scrollCts?.Cancel();
         _scrollCts = null;
         UnhookIndexSource();

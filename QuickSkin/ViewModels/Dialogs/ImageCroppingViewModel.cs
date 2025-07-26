@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Avalonia.Controls.Notifications;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -58,7 +57,7 @@ public partial class ImageCroppingViewModel(Bitmap sourceImage) : ObservableObje
         }
         catch (Exception ex)
         {
-            NotificationService.Show("坏欸", $"保存文件失败了！\n{ex.Message}", NotificationType.Error);
+            NotificationService.Error("坏欸", $"保存文件失败了！\n{ex.Message}");
         }
     }
 
